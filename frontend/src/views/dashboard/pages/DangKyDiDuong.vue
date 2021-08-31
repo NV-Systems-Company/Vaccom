@@ -135,7 +135,7 @@
                   <div class="mb-2">Số CMND/CCCD <span style="color:red">(*)</span></div>
                   <v-text-field
                     v-model="applicantInfo['CMTCCCD']"
-                    :rules="!giayToLoaiKhac ? requiredCredit : required"
+                    :rules="requiredCredit"
                     required
                     outlined
                     placeholder="Số CMND/CCCD"
@@ -144,19 +144,14 @@
                     hide-details="auto"
                     @keyup.enter="nextFocus('bhyt')"
                   ></v-text-field>
-                  <v-checkbox
-                  class="mt-0 checkboxCmt"
-                    v-model="giayToLoaiKhac"
-                    label="Giấy tờ loại khác"
-                  ></v-checkbox>
                 </v-col>
               </v-row>
               <!-- row 2 -->
-              <v-row class="mt-0">
+              <v-row>
                 <v-col
                   cols="12"
                   md="3"
-                  class="pb-0 pt-0"
+                  class="pb-0"
                 >
                   <div class="mb-2">Số thẻ BHYT</div>
                   <v-text-field
@@ -172,7 +167,7 @@
                 <v-col
                   cols="12"
                   md="3"
-                  class="pb-0 pt-0"
+                  class="pb-0"
                 >
                   <div class="mb-2">Số điện thoại <span style="color:red">(*)</span></div>
                   <v-text-field
@@ -207,7 +202,7 @@
                 <v-col
                   cols="12"
                   md="6"
-                  class="pb-0 pt-0"
+                  class="pb-0"
                 >
                   <div class="mb-2">Email</div>
                   <v-text-field
@@ -348,7 +343,7 @@
                       dense
                       hide-details="auto"
                       id="cosoyte"
-                      @keyup.enter="nextFocus('nhomdoituong')"
+                      @keyup.enter="nextFocus('diabancoso')"
                       clearable
                   ></v-autocomplete>
                 </v-col>
@@ -628,7 +623,6 @@
       return {
         loading: false,
         validFormAdd: true,
-        giayToLoaiKhac: false,
         tab: null,
         typeAction: 'add',
         processingAction: false,
@@ -703,14 +697,14 @@
           (value) => {
             if (value && value.length === 9) {
               const pattern = /^(([0-9]{9,9}))$/
-              return pattern.test(value) || 'Số CMND/CCCD gồm 9 hoặc 12 ký tự 0-9'
+              return pattern.test(value) || 'Số CMND gồm 9 hoặc 12 ký tự 0-9'
             } else {
               const pattern = /^(([0-9]{12,12}))$/
-              return pattern.test(value) || 'Số CMND/CCCD gồm 9 hoặc 12 ký tự 0-9'
+              return pattern.test(value) || 'Số CMND gồm 9 hoặc 12 ký tự 0-9'
             }
           },
           (value) => {
-            if(String(value).trim()){
+            if(value || value == 0){
               return true
             } else {
               return 'Thông tin bắt buộc'
@@ -784,7 +778,7 @@
       },
       coSoYTe (val) {
         this.applicantInfo.CoSoYTe_Ma = val
-        // this.getDiaBanCoSo(val)
+        this.getDiaBanCoSo(val)
       },
       birthDate (val) {
         this.applicantDateFormatted = this.formatDate(this.birthDate)
@@ -908,7 +902,6 @@
                 vm.applicantInfo['SoTheBHYT'] = ''
                 vm.applicantInfo['SoDienThoai'] = ''
                 vm.$refs.formDangKy.resetValidation()
-                vm.giayToLoaiKhac = false
                 $('html, body').animate({
                     scrollTop: $('#xemdanhsach').offset().top,
                   },
