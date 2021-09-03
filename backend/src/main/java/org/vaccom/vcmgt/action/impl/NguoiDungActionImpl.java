@@ -166,16 +166,20 @@ public class NguoiDungActionImpl implements NguoiDungAction {
 		long coSoYTeId = bodyData.has(EntityConstant.COSOYTE_ID) ? bodyData.get(EntityConstant.COSOYTE_ID).longValue()
 				: 0;
 
+		long uyBanNhanDanId = bodyData.has(EntityConstant.UYBANNHANDAN_ID) ? bodyData.get(EntityConstant.UYBANNHANDAN_ID).longValue()
+				: 0;
+
 		if (Validator.isNull(hoVaTen)) {
 			throw new ActionException(MessageUtil.getVNMessageText("hovaten.empty"), HttpStatus.NOT_ACCEPTABLE.value());
 		}
 
 		nguoiDung.setChucDanh(chucDanh);
-		nguoiDung.setCoSoYTeId(diaBanCoSoId);
-		nguoiDung.setDiaBanCoSoId(coSoYTeId);
+		nguoiDung.setCoSoYTeId(coSoYTeId);
+		nguoiDung.setDiaBanCoSoId(diaBanCoSoId);
+		nguoiDung.setUyBanNhanDanId(uyBanNhanDanId);
 		nguoiDung.setEmail(email);
 		nguoiDung.setHoVaTen(hoVaTen);
-		// nguoiDung.setQuanTriHeThong(quanTriHeThong);
+//		 nguoiDung.setQuanTriHeThong(quanTriHeThong);
 		nguoiDung.setSoDienThoai(soDienThoai);
 
 		return nguoiDungService.updateNguoiDung(nguoiDung);
@@ -202,6 +206,11 @@ public class NguoiDungActionImpl implements NguoiDungAction {
 		}
 
 		return nguoiDungService.updateNguoiDung(nguoiDung, khoaDangKy);
+	}
+
+	@Override
+	public NguoiDung findByNguoiTiemChungId(long nguoiTiemChungId) {
+		return nguoiDungService.findByNguoiTiemChungId(nguoiTiemChungId);
 	}
 
 	@Override
