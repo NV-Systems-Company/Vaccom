@@ -13,8 +13,8 @@ class LoginViewModel extends BaseViewModel {
   bool get isValid => username.isNotEmpty && password.isNotEmpty;
 
   LoginViewModel() {
-    usernameCtrl.text = r'';
-    passwordCtrl.text = r'';
+    usernameCtrl.text = r'anhtt';
+    passwordCtrl.text = r'fds@22021';
   }
 
   Future<VacToken> login() async {

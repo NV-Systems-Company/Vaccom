@@ -9,30 +9,19 @@ class ServerInfo {
     this.protocol
   });
 
-  static List<ServerInfo> all = [vaccom, thachban, mobile, webvang];
+  static List<ServerInfo> all = [vaccom, mobile];
 
   static ServerInfo vaccom = ServerInfo(
-      title: r'Máy chủ Vaccom',
-      desc: r'HỆ THỐNG QUẢN LÝ VÀ TỔ CHỨC ĐIỂM TIÊM CHỦNG',
-      baseUrl: r'vaccom.vn:8080/rest/v1/',
-      protocol: 'https',
-      logoBanner: r'https://vaccom.vn/images/logo_banner.png');
-  static ServerInfo thachban = ServerInfo(
-      title: r'Máy chủ Phường Thạch Bàn',
+      title: r'Vaccom',
       desc: r'HỆ THỐNG QUẢN LÝ VÀ TỔ CHỨC ĐIỂM TIÊM CHỦNG',
       baseUrl: r'thachban.vaccom.vn:8080/rest/v1/',
       protocol: 'https',
-      logoBanner: r'https://vaccom.vn/images/logo_banner.png');
+      logoBanner: r'https://thachban.vaccom.vn/images/logo_banner.png');
+
   static ServerInfo mobile = ServerInfo(
-      title: r'Máy chủ Mobile',
+      title: r'Mobile',
       desc: r'HỆ THỐNG QUẢN LÝ VÀ TỔ CHỨC ĐIỂM TIÊM CHỦNG',
       baseUrl: r'mobile.vaccom.vn:8080/rest/v1/',
       protocol: 'https',
-      logoBanner: r'https://vaccom.vn/images/logo_banner.png');
-  static ServerInfo webvang = ServerInfo(
-      title: r'Máy chủ Webvang',
-      desc: r'HỆ THỐNG QUẢN LÝ VÀ TỔ CHỨC ĐIỂM TIÊM CHỦNG',
-      baseUrl: r'mobile.webvang.vn:8080/rest/v1/',
-      protocol: 'https',
-      logoBanner: r'https://vaccom.vn/images/logo_banner.png');
+      logoBanner: r'https://thachban.vaccom.vn/images/logo_banner.png');
 }

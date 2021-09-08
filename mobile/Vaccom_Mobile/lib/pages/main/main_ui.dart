@@ -8,6 +8,7 @@ import 'package:vaccom_mobile/components/gradient_view.dart';
 import 'package:vaccom_mobile/model/dashboard_item.dart';
 import 'package:get/get.dart';
 import 'package:vaccom_mobile/network/global.dart';
+import 'package:vaccom_mobile/pages/checkin/checkin_ui.dart';
 import 'package:vaccom_mobile/network/response/mapping/user.dart';
 import 'package:vaccom_mobile/pages/main/main_vm.dart';
 import 'package:vaccom_mobile/pages/sample/sample.dart';
@@ -164,6 +165,13 @@ class _MainPage extends State<MainPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final user = Global.shared.currentUser;
 
+    List<Widget> tabPage = <Widget>[
+      CheckIn(),
+      Container(),
+      Container(),
+      Container(),
+    ];
+
     final drawerWidget = Drawer(
       child: Column(
         children: [
@@ -285,7 +293,7 @@ class _MainPage extends State<MainPage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        body: dashboardWidget(),
+        body: tabPage[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: VBottomBar.items(),
           currentIndex: _selectedIndex,
