@@ -23,11 +23,15 @@ public interface MuiTiemChungAction {
 
 	public List<MuiTiemChung> findByCmtcccd(String cmtcccd);
 	
-	public long countByNguoiTiemChungId(long id);
+	public long countByCongDan_ID(long id);
 
-	public List<MuiTiemChung> findByNguoiTiemChungId(long id);
+	public List<MuiTiemChung> findByCongDan_ID(long id);
 
 	public List<MuiTiemChung> findByCoSoYTeId(long id, int page, int size);
 
 	public MuiTiemChung updateMuiTiemChung(long id, String reqBody) throws Exception;
+
+	public MuiTiemChung update(MuiTiemChung muiTiemChung);
+
+	public MuiTiemChung create(MuiTiemChung muiTiemChung);
 }

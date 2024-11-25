@@ -5,18 +5,22 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.vaccom.vcmgt.dto.NguoiTiemChungDto;
 import org.vaccom.vcmgt.dto.ResultSearchDto;
+import org.vaccom.vcmgt.entity.CongDan;
 import org.vaccom.vcmgt.entity.NguoiTiemChung;
 
 @Service
 public interface NguoiTiemChungService {
 
 	public long countByCmtcccd(String cmtcccd);
-	
+
+	public long countBySoDienThoai(String sdt);
+
 	public long countByCmtcccd(String cmtcccd, int tinhTrangDangKy);
 
 	public long countByDiaBanCoSoId(long id);
 
 	public long countAll();
+
 
 	public NguoiTiemChung findById(long id);
 
@@ -33,11 +37,23 @@ public interface NguoiTiemChungService {
 	public List<NguoiTiemChung> searchNguoiTiemChung(int page, int size);
 
 	public long countNguoiTiemChung(String cmtcccd, Integer nhomdoituong, String ngaydangki, String hovaten,
-			Long diabancosoid, String cosoytema, Integer tinhtrangdangki, Integer kiemtratrung);
+			Long diabancosoid, String cosoytema, Integer tinhtrangdangki, Integer kiemtratrung, String tinhthanhma, String tinhthanhten, String quanhuyenma
+			,  String quanhuyenten, String phuongxama, String phuongxaten);
 
 	public List<NguoiTiemChung> searchNguoiTiemChung(String cmtcccd, Integer nhomdoituong, String ngaydangki,
-			String hovaten, Long diabancosoid, String cosoytema, Integer tinhtrangdangki, Integer kiemtratrung, Integer page, Integer size);
+			String hovaten, Long diabancosoid, String cosoytema, Integer tinhtrangdangki, Integer kiemtratrung, Integer page, Integer size, String tinhthanhma, String tinhthanhten, String quanhuyenma
+			,  String quanhuyenten, String phuongxama, String phuongxaten, Boolean isDatTieuChuan);
 
 	public ResultSearchDto<NguoiTiemChung> search(NguoiTiemChungDto nguoiTiemChungDto, int page, int size);
+	public ResultSearchDto<CongDan> searchDaTiem(NguoiTiemChungDto nguoiTiemChungDto, int page, int size);
+	public ResultSearchDto<NguoiTiemChung> searchOr(NguoiTiemChungDto nguoiTiemChungDto, int page, int size);
+
+	public List<NguoiTiemChung> searchListChuyenDangKyChinhThuc(NguoiTiemChungDto nguoiTiemChungDto);
+
+	public NguoiTiemChung findByCMTCCCD(String cmtcccd);
+
+	public NguoiTiemChung findBycongDanID(long id);
+
+
 
 }

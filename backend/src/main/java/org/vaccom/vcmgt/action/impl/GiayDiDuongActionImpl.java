@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.vaccom.vcmgt.action.GiayDiDuongAction;
 import org.vaccom.vcmgt.controler.AuthenticationControler;
 import org.vaccom.vcmgt.dto.GiayDiDuongDto;
+import org.vaccom.vcmgt.dto.ResultSearchDto;
 import org.vaccom.vcmgt.entity.GiayDiDuong;
 import org.vaccom.vcmgt.exception.ActionException;
 import org.vaccom.vcmgt.service.GiayDiDuongService;
@@ -34,7 +35,6 @@ public class GiayDiDuongActionImpl implements GiayDiDuongAction {
     public GiayDiDuong create(GiayDiDuongDto giayDiDuongDto) throws Exception {
 
         if(giayDiDuongDto.hoVaTen == null || giayDiDuongDto.hoVaTen.isEmpty()) {
-            _log.warn("hoVaTen is null");
             return null;
         }
 
@@ -53,6 +53,12 @@ public class GiayDiDuongActionImpl implements GiayDiDuongAction {
     @Override
     public GiayDiDuong update(GiayDiDuong giayDiDuong, GiayDiDuongDto giayDiDuongDto) throws Exception {
         transformService.paperTraffic(giayDiDuong, giayDiDuongDto, false);
+        return giayDiDuongService.save(giayDiDuong);
+    }
+
+    @Override
+    public GiayDiDuong updateStatus(GiayDiDuong giayDiDuong, int statusNew) throws Exception {
+        giayDiDuong.setStatus(statusNew);
         return giayDiDuongService.save(giayDiDuong);
     }
 
@@ -94,6 +100,11 @@ public class GiayDiDuongActionImpl implements GiayDiDuongAction {
     @Override
     public long countAll() {
         return 0;
+    }
+
+    @Override
+    public ResultSearchDto<GiayDiDuong> search(GiayDiDuongDto giayDiDuongDto) {
+        return giayDiDuongService.search(giayDiDuongDto);
     }
 
     @Override

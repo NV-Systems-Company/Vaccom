@@ -30,9 +30,27 @@ export default new Router({
           props: true,
         },
         {
+          path: '/pages/dang-ky-chinh-thuc/:uid',
+          name: 'DangKyTiemChinhThuc',
+          component: () => import('@/views/dashboard/pages/DangKyTiemMoi'),
+          props: true,
+        },
+        {
           path: '/pages/danh-sach-dang-ky-chinh-thuc',
           name: 'DanhSachDangKyChinhThuc',
           component: () => import('@/views/dashboard/pages/DanhSachDangKyChinhThuc'),
+          props: true,
+        },
+        {
+          path: '/pages/danh-sach-du-kien-tiem',
+          name: 'DanhSachDuKienTiem',
+          component: () => import('@/views/dashboard/pages/DanhSachDuKienTiem'),
+          props: true,
+        },
+        {
+          path: '/pages/danh-sach-goi-tiem',
+          name: 'DanhSachGoiTiem',
+          component: () => import('@/views/dashboard/pages/DanhSachGoiTiem'),
           props: true,
         },
         {
@@ -42,7 +60,7 @@ export default new Router({
           props: true,
         },
         {
-          path: '/pages/chung-nhan-tiem-chung',
+          path: '/pages/danh-sach-da-tiem-chung',
           name: 'DanhSachMuiTiemChung',
           component: () => import('@/views/dashboard/pages/DanhSachMuiTiem'),
           props: true,
@@ -59,7 +77,7 @@ export default new Router({
         },
         {
           name: 'DiaBanCoSo',
-          path: '/pages/uy-ban-nha-dan',
+          path: '/pages/uy-ban-nhan-dan',
           component: () => import('@/views/dashboard/pages/UyBanNhanDan'),
         },
         {
@@ -87,6 +105,12 @@ export default new Router({
           path: '/pages/dang-ky-di-duong/:uid',
           name: 'DangKyDiDuong',
           component: () => import('@/views/dashboard/pages/DangKyDiDuong'),
+          props: true,
+        },
+        {
+          path: '/pages/hen-tiem-chung/:uid',
+          name: 'PhieuHenTiem',
+          component: () => import('@/views/dashboard/pages/MauPhieuHenTiem'),
           props: true,
         },
         {

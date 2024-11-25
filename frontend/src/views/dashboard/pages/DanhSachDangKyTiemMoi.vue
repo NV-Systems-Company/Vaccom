@@ -48,15 +48,31 @@
               </v-icon>
               Xóa đăng ký
             </v-btn>  
-            <v-btn color="green" small class="mx-0" @click.stop="translateStatus('multiple')" :loading="processingAction" :disabled="processingAction">
+            <!-- <v-btn color="green" small class="mx-0" @click.stop="translateStatus('multiple')" :loading="processingAction" :disabled="processingAction">
               <v-icon left size="20">
                 mdi-transfer
               </v-icon>
               Chuyển đăng ký chính thức
+            </v-btn> -->
+            <v-btn v-if="userLogin['role_name'] == 'QuanTriHeThong'" color="green" small class="mx-0" @click.stop="syncStatus()" :loading="processingAction" :disabled="processingAction">
+              <v-icon left size="20">
+                mdi-transfer
+              </v-icon>
+              Đồng bộ sang danh sách chính thức
             </v-btn>
             <input v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo' || userLogin['role_name'] == 'CanBoYTe'" type="file" id="fileImport" @input="uploadFileImport($event)" style="display:none">
           </div>
-          
+          <v-flex xs12 style="text-align: right;">
+            <v-checkbox
+              color="#0072bc"
+              class="mt-0 checkboxCmt d-inline-block"
+              v-model="dangkythieuthongtin"
+            >
+              <template v-slot:label>
+                <span style="font-weight: 500;color: #0072bc">LỌC ĐĂNG KÝ THIẾU THÔNG TIN</span>
+              </template>
+            </v-checkbox>
+          </v-flex>
           <v-data-table
             v-model="selected"
             show-select
@@ -111,14 +127,14 @@
                   </template>
                   <span>Xóa đăng ký</span>
                 </v-tooltip>
-                <v-tooltip top>
+                <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn @click="translateStatus(item)" color="green" text icon class="" v-bind="attrs" v-on="on">
                       <v-icon size="22">mdi-transfer</v-icon>
                     </v-btn>
                   </template>
                   <span>Chuyển chính thức</span>
-                </v-tooltip>
+                </v-tooltip> -->
               </div>
               
             </template>
@@ -191,6 +207,8 @@
         pageCount: 0,
         itemsPerPage: 50,
         items: [],
+        dangkythieuthongtin: false,
+        searchAll: true,
         advanceSearchData: {
           codeNumber: '',
           customerTelNo: '',
@@ -266,14 +284,28 @@
         return this.$store.getters.getBreakpointName
       },
     },
+    watch: {
+      dangkythieuthongtin (val) {
+        if (val) {
+          this.searchAll = false
+          this.locDanhSachNguoiTiemThieuThongTin(0)
+        } else {
+          if (!this.searchAll) {
+            this.getDanhSachDangKyMoi(0)
+          }
+        }
+      }
+    },
     methods: {
       searchDangKyTiem (data) {
         let vm = this
+        vm.searchAll = true
         console.log('dataSearch', data)
         vm.dataInputSearch = data
         vm.page = 0
         vm.totalItem = 0
         vm.pageCount = 0
+        vm.dangkythieuthongtin = false
         vm.getDanhSachDangKyMoi(0, data)
       },
       cancelSearchDangKyTiem (data) {
@@ -303,9 +335,43 @@
           diabancosoid: dataSearch && dataSearch.hasOwnProperty('DiaBanCoSo_ID') ? dataSearch['DiaBanCoSo_ID'] : '',
           cosoytema: dataSearch && dataSearch['CoSoYTe_Ma'] ? dataSearch['CoSoYTe_Ma'] : '',
           kiemtratrung: dataSearch && dataSearch['KiemTraTrung'] ? dataSearch['KiemTraTrung'] : '',
+          tinhthanhma: dataSearch && dataSearch['TinhThanh_Ma'] ? dataSearch['TinhThanh_Ma'] : '',
+          quanhuyenma: dataSearch && dataSearch['QuanHuyen_Ma'] ? dataSearch['QuanHuyen_Ma'] : '',
+          phuongxama: dataSearch && dataSearch['PhuongXa_Ma'] ? dataSearch['PhuongXa_Ma'] : '',
+          tinhthanhten: '',
+          quanhuyenten: '',
+          phuongxaten: '',
           typeSearch: 'danhsachdangkymoi'
         }
         vm.$store.dispatch('getNguoiTiemChung', filter).then(function(result) {
+          vm.loadingData = false
+          if (result) {
+            vm.items = result.hasOwnProperty('data') ? result.data : []
+            vm.totalItem = result.hasOwnProperty('total') ? result.total : 0
+            vm.pageCount = Math.ceil(vm.totalItem / vm.itemsPerPage)
+          } else {
+            vm.items = []
+            vm.totalItem = 0
+          }
+        }).catch(function () {
+          vm.items = []
+          vm.totalItem = 0
+          vm.loadingData = false
+        })
+      },
+      locDanhSachNguoiTiemThieuThongTin (pageIn) {
+        let vm = this
+        vm.loadingData = true
+        let filter = {
+          page: pageIn,
+          size: vm.itemsPerPage,
+          data: {
+            tinhtrangdangki: 0,
+            isSearchOr: true
+          }
+          
+        }
+        vm.$store.dispatch('locDanhSachNguoiTiemThieuThongTin', filter).then(function(result) {
           vm.loadingData = false
           if (result) {
             vm.items = result.hasOwnProperty('data') ? result.data : []
@@ -367,6 +433,41 @@
           })
         }
         
+      },
+      syncStatus () {
+        let vm = this
+        let filter = {
+          data: {
+            TinhTrangDangKi: 1,
+            syncAll: true
+          }
+        }
+        let textConfirm = 'Bạn có chắc chắn muốn đồng bộ tất cả danh sách'
+        let x = confirm(textConfirm)
+        if (x) {
+          vm.processingAction = true
+          vm.$store.dispatch('updateRegistrationStatus', filter).then(function (result) {
+            let text = 0
+            if (result.total) {
+              text = result.total
+            }
+            vm.$store.commit('SHOW_SNACKBAR', {
+              show: true,
+              text: 'Đồng bộ thành công ' + text + ' đăng ký',
+              color: 'success',
+            })
+            vm.processingAction = false
+            vm.getDanhSachDangKyMoi(0)
+            vm.selected = []
+          }).catch(function () {
+            vm.processingAction = false
+            vm.$store.commit('SHOW_SNACKBAR', {
+              show: true,
+              text: 'Đồng bộ thất bại',
+              color: 'error',
+            })
+          })
+        }
       },
       removeRegistrationStatus (item) {
         let vm = this
@@ -462,7 +563,13 @@
             hovaten: vm.dataInputSearch && vm.dataInputSearch['HoVaTen'] ? vm.dataInputSearch['HoVaTen'] : '',
             diabancosoid: vm.dataInputSearch && vm.dataInputSearch.hasOwnProperty('DiaBanCoSo_ID') ? vm.dataInputSearch['DiaBanCoSo_ID'] : '',
             cosoytema: vm.dataInputSearch && vm.dataInputSearch['CoSoYTe_Ma'] ? vm.dataInputSearch['CoSoYTe_Ma'] : '',
-            kiemtratrung: vm.dataInputSearch && vm.dataInputSearch['KiemTraTrung'] ? vm.dataInputSearch['KiemTraTrung'] : -1
+            kiemtratrung: vm.dataInputSearch && vm.dataInputSearch['KiemTraTrung'] ? vm.dataInputSearch['KiemTraTrung'] : -1,
+            tinhthanhma: vm.dataInputSearch && vm.dataInputSearch['TinhThanh_Ma'] ? vm.dataInputSearch['TinhThanh_Ma'] : '',
+            tinhthanhten: '',
+            quanhuyenma: vm.dataInputSearch && vm.dataInputSearch['QuanHuyen_Ma'] ? vm.dataInputSearch['QuanHuyen_Ma'] : '',
+            quanhuyenten: '',
+            phuongxama: vm.dataInputSearch && vm.dataInputSearch['PhuongXa_Ma'] ? vm.dataInputSearch['PhuongXa_Ma'] : '',
+            phuongxaten: ''
           }
         }
         vm.$store.dispatch('exportDanhSach', filter).then(function(result) {
@@ -474,7 +581,11 @@
       changePage (config) {
         let vm = this
         vm.page = config.page
-        vm.getDanhSachDangKyMoi(config.page, vm.dataInputSearch)
+        if (vm.dangkythieuthongtin) {
+          vm.locDanhSachNguoiTiemThieuThongTin(config.page)
+        } else {
+          vm.getDanhSachDangKyMoi(config.page, vm.dataInputSearch)
+        }
       },
       editRegistration (item) {
         let vm = this

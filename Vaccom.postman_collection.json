@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e9ffa138-5b8d-47db-95f4-cd5404de0782",
+		"_postman_id": "40f10a08-3a09-48a2-86ae-10f770f24ed0",
 		"name": "Vaccom",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -13,12 +13,12 @@
 					"basic": [
 						{
 							"key": "password",
-							"value": "",
+							"value": "KillCovid19",
 							"type": "string"
 						},
 						{
 							"key": "username",
-							"value": "",
+							"value": "admin",
 							"type": "string"
 						}
 					]
@@ -965,7 +965,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8686/rest/v1/app/get/nguoitiemchung?page=0&size=50&cmtcccd=&nhomdoituong&ngaydangki&hovaten=&diabancosoid&cosoytema&tinhtrangdangky&kiemtratrung=",
+					"raw": "http://localhost:8686/rest/v1/app/get/nguoitiemchung?page=0&size=50&cmtcccd=&nhomdoituong=&ngaydangki=&hovaten=&diabancosoid=&cosoytema=&tinhtrangdangky=&kiemtratrung=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -993,11 +993,11 @@
 						},
 						{
 							"key": "nhomdoituong",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "ngaydangki",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "hovaten",
@@ -1005,15 +1005,15 @@
 						},
 						{
 							"key": "diabancosoid",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "cosoytema",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "tinhtrangdangky",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "kiemtratrung",
@@ -1051,7 +1051,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8686/rest/v1/app/get/danhsachdangkymoi?page=0&size=50&cmtcccd=&nhomdoituong&ngaydangki&hovaten=&diabancosoid&cosoytema&tinhtrangdangky&kiemtratrung=",
+					"raw": "http://localhost:8686/rest/v1/app/get/danhsachdangkymoi?page=0&size=50&cmtcccd=&nhomdoituong=&ngaydangki=&hovaten=&diabancosoid=&cosoytema=&tinhtrangdangky=&kiemtratrung=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1079,11 +1079,11 @@
 						},
 						{
 							"key": "nhomdoituong",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "ngaydangki",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "hovaten",
@@ -1091,15 +1091,15 @@
 						},
 						{
 							"key": "diabancosoid",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "cosoytema",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "tinhtrangdangky",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "kiemtratrung",
@@ -1137,7 +1137,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8686/rest/v1/app/get/danhsachdangkychinhthuc?page=0&size=50&cmtcccd=&nhomdoituong&ngaydangki&hovaten=&diabancosoid&cosoytema&tinhtrangdangky&kiemtratrung=",
+					"raw": "http://localhost:8686/rest/v1/app/get/danhsachdangkychinhthuc?page=0&size=50&cmtcccd=&nhomdoituong=&ngaydangki=&hovaten=&diabancosoid=&cosoytema=&tinhtrangdangky=&kiemtratrung=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1165,11 +1165,11 @@
 						},
 						{
 							"key": "nhomdoituong",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "ngaydangki",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "hovaten",
@@ -1177,15 +1177,15 @@
 						},
 						{
 							"key": "diabancosoid",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "cosoytema",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "tinhtrangdangky",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "kiemtratrung",
@@ -1223,7 +1223,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8686/rest/v1/app/get/danhsachdahuy?page=0&size=50&cmtcccd=&nhomdoituong&ngaydangki&hovaten=&diabancosoid&cosoytema&tinhtrangdangky&kiemtratrung=",
+					"raw": "http://localhost:8686/rest/v1/app/get/danhsachdahuy?page=0&size=50&cmtcccd=&nhomdoituong=&ngaydangki=&hovaten=&diabancosoid=&cosoytema=&tinhtrangdangky=&kiemtratrung=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1251,11 +1251,11 @@
 						},
 						{
 							"key": "nhomdoituong",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "ngaydangki",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "hovaten",
@@ -1263,15 +1263,15 @@
 						},
 						{
 							"key": "diabancosoid",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "cosoytema",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "tinhtrangdangky",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "kiemtratrung",
@@ -1348,6 +1348,101 @@
 						"rest",
 						"v1",
 						"import",
+						"exceldata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[admin]Import Phiếu Hẹn Tiêm",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzMTI5MjY0OSwiZXhwIjoxNjMxMjk2MjQ5fQ.1X1z8ExlBPG1xJVvjwGPMqqexvi5eEku9VfBWPhHWNFll5r8K24FXz3G_zzOZmQpIlmL_evWFUl9CxoKM9YIfA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/D:/DanhSachTiemChinhThuc (3).xls"
+						},
+						{
+							"key": "sheetAt",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "startCol",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "endCol",
+							"value": "26",
+							"type": "text"
+						},
+						{
+							"key": "startRow",
+							"value": "8",
+							"type": "text"
+						},
+						{
+							"key": "endRow",
+							"value": "20000",
+							"type": "text"
+						},
+						{
+							"key": "table",
+							"value": "phieuhentiem",
+							"type": "text"
+						},
+						{
+							"key": "lichTiemChung_ID",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "ngayHenTiem",
+							"value": "15/08/2021",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "gioHenTiem",
+							"value": "09:00",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "lanTiem",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/import/phieuhentiem/exceldata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"import",
+						"phieuhentiem",
 						"exceldata"
 					]
 				}
@@ -1628,7 +1723,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8686/rest/v1/export/nguoitiemchung?page=-1&size=-1&cmtcccd=&nhomdoituong&ngaydangki=&hovaten=&diabancosoid=&cosoytema&tinhtrangdangky&kiemtratrung=",
+					"raw": "http://localhost:8686/rest/v1/export/nguoitiemchung?page=-1&size=-1&cmtcccd=&nhomdoituong=&ngaydangki=&hovaten=&diabancosoid=&cosoytema=&tinhtrangdangky=&kiemtratrung=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -1655,7 +1750,7 @@
 						},
 						{
 							"key": "nhomdoituong",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "ngaydangki",
@@ -1671,11 +1766,11 @@
 						},
 						{
 							"key": "cosoytema",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "tinhtrangdangky",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "kiemtratrung",
@@ -2556,7 +2651,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8686/rest/v1/app/get/catiemchung?page=0&size=10&lichtiemchungid&diabancosoid",
+					"raw": "http://localhost:8686/rest/v1/app/get/catiemchung?page=0&size=10&lichtiemchungid=&diabancosoid=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -2580,11 +2675,11 @@
 						},
 						{
 							"key": "lichtiemchungid",
-							"value": null
+							"value": ""
 						},
 						{
 							"key": "diabancosoid",
-							"value": null
+							"value": ""
 						}
 					]
 				}
@@ -3691,6 +3786,277 @@
 							"value": "30",
 							"disabled": true
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QR Code] Lấy Giấy Đi Đường Thông Qua QR Code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/get/giaydiduong-maqr?maQr=gdd-xu9eet-msgnwx-xn0wr0-qg62dm-varj98",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"get",
+						"giaydiduong-maqr"
+					],
+					"query": [
+						{
+							"key": "maQr",
+							"value": "gdd-xu9eet-msgnwx-xn0wr0-qg62dm-varj98"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QR Code] Lấy Giấy Hẹn Thông Qua QR Code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/get/phieuhen-maqr?maQr=pht-owzjhn-sc39xq-rjlbdh-p4du6t-yfnbby",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"get",
+						"phieuhen-maqr"
+					],
+					"query": [
+						{
+							"key": "maQr",
+							"value": "pht-owzjhn-sc39xq-rjlbdh-p4du6t-yfnbby"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QR Code] Lấy Đăng Ký Mới Thông Qua QR Code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/get/dangkymoi-maqr?maQr=ntc-ab7nz1-dpdlxq-95rjkz-rsmgfn-5j00eo",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"get",
+						"dangkymoi-maqr"
+					],
+					"query": [
+						{
+							"key": "maQr",
+							"value": "ntc-ab7nz1-dpdlxq-95rjkz-rsmgfn-5j00eo"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[canboyte] Gửi thông báo hàng loạt theo lịch tiêm chủng",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzMTI5NTkwNywiZXhwIjoxNjMxMjk5NTA3fQ.cKIhSVh63gZj5HTyD1VSaiY1f0OLKzxZCdBBtW3ZY87zrawIYotaNyGfSYKXdtEht_GeXtU7sMt2kIwn1pNPGA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/update/phieuhentiem/guiThongBao/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"update",
+						"phieuhentiem",
+						"guiThongBao",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QR Code] Lấy danh sách hàng đợi thông báo",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzMTI5NTkwNywiZXhwIjoxNjMxMjk5NTA3fQ.cKIhSVh63gZj5HTyD1VSaiY1f0OLKzxZCdBBtW3ZY87zrawIYotaNyGfSYKXdtEht_GeXtU7sMt2kIwn1pNPGA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/get/hangchothongbao?isSent=true&isReady=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"get",
+						"hangchothongbao"
+					],
+					"query": [
+						{
+							"key": "isSent",
+							"value": "true"
+						},
+						{
+							"key": "isReady",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QR Code] Lấy Chứng Nhận Tiêm Chủng Thông Qua QR Code Copy 2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/get/chung-nhan-tiem-chung-maqr?maQr=pht-owzjhn-sc39xq-rjlbdh-p4du6t-yfnbby",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"get",
+						"chung-nhan-tiem-chung-maqr"
+					],
+					"query": [
+						{
+							"key": "maQr",
+							"value": "pht-owzjhn-sc39xq-rjlbdh-p4du6t-yfnbby"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[admin] Lấy danh sách hàng chờ thông báo",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzMTQ0MDg3MSwiZXhwIjoxNjMxNDQ0NDcxfQ.pnnzZTqh_pAZ8_K8SDuqBM_QBmwX8nJkeJF6zwnbcuBzRE2OMaLUlX3fzabACZ8Om9IZjG3lbIxoXhGuBWAYYQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/get/hangchothongbao?isSent=true&isReady=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"get",
+						"hangchothongbao"
+					],
+					"query": [
+						{
+							"key": "isSent",
+							"value": "true"
+						},
+						{
+							"key": "isReady",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[admin] Thực hiện gửi lại tin nhắn đã lỗi",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTYzMTQ0MDg3MSwiZXhwIjoxNjMxNDQ0NDcxfQ.pnnzZTqh_pAZ8_K8SDuqBM_QBmwX8nJkeJF6zwnbcuBzRE2OMaLUlX3fzabACZ8Om9IZjG3lbIxoXhGuBWAYYQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8686/rest/v1/app/update/hangchothongbao/resetSendMessage",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8686",
+					"path": [
+						"rest",
+						"v1",
+						"app",
+						"update",
+						"hangchothongbao",
+						"resetSendMessage"
 					]
 				}
 			},

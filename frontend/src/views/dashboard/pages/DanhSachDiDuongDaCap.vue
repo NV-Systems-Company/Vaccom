@@ -36,12 +36,19 @@
               </v-icon>
               Xuất danh sách
             </v-btn> -->
-            <v-btn color="red" small class="mx-0" @click.stop="translateStatusMultiple()" :loading="processingAction" :disabled="processingAction">
+            <!-- translateStatusMultiple -->
+            <v-btn color="red" small class="mx-0" @click.stop="showRutGiayDiDuong('multiple')" :loading="processingAction" :disabled="processingAction">
               <v-icon left size="20">
                 mdi-text-box-check-outline
               </v-icon>
               Rút giấy đi đường
             </v-btn>
+            <!-- <v-btn color="orange" small class="mx-0" @click.stop="showRutGiayDiDuong('all')" :loading="processingAction" :disabled="processingAction">
+              <v-icon left size="20">
+                mdi-text-box-check-outline
+              </v-icon>
+              Rút tất cả
+            </v-btn> -->
             <input v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'CanBoUBND'" type="file" id="fileImport" @input="uploadFileImport($event)" style="display:none">
           </div>
           
@@ -122,11 +129,19 @@
                 </v-tooltip> -->
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="translateStatus(item)" color="red" text icon class="" v-bind="attrs" v-on="on">
+                    <v-btn @click="showRutGiayDiDuong('one', item)" color="red" text icon class="" v-bind="attrs" v-on="on">
                       <v-icon size="22">mdi-text-box-check-outline</v-icon>
                     </v-btn>
                   </template>
                   <span>Rút giấy đi đường</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn @click="xemGiayDiduong(item)" color="blue" text icon class="" v-bind="attrs" v-on="on">
+                      <v-icon size="22">mdi-account-eye-outline</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Xem giấy đi đường</span>
                 </v-tooltip>
               </div>
               
@@ -136,15 +151,15 @@
         </v-card-text>
       </base-material-card>
       <v-dialog
-        max-width="600"
+        max-width="1000"
         v-model="dialog"
       >
         <v-card>
           <v-toolbar
             dark
-            color="primary"
+            color="#0072bc"
           >
-            <v-toolbar-title>Thông tin chi tiết</v-toolbar-title>
+            <v-toolbar-title >Rút giấy đi đường</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
               <v-btn
@@ -157,10 +172,70 @@
             </v-toolbar-items>
           </v-toolbar>
           <v-card-text class="mt-5">
-            
+            <v-form
+              ref="formRut"
+              v-model="validFormRut"
+              lazy-validation
+            >
+                <v-layout wrap>
+                  <v-textarea
+                      class="flex xs12 md12"
+                      v-model="lyDoRut"
+                      outlined
+                      label="Lý do rút giấy đi đường"
+                      dense
+                      clearable
+                      rows="3"
+                      :rules="required"
+                      required
+                  ></v-textarea>
+                </v-layout>
+            </v-form>
           </v-card-text>
           <v-card-actions class="justify-end">
+            
             <v-btn color="red" class="white--text mr-2" :loading="loading" :disabled="loading" @click="dialog = false">
+              <v-icon left>
+                mdi-close
+              </v-icon>
+              Thoát
+            </v-btn>
+            <v-btn class="mr-2" color="#0072bc" :loading="loading" :disabled="loading" @click="submitTranslate">
+              <v-icon left>
+                mdi-content-save
+              </v-icon>
+              <span>Đồng ý</span>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog
+        max-width="750"
+        v-model="dialogGiayDiDuong"
+      >
+        <v-card>
+          <v-toolbar
+            dark
+            color="#0072bc"
+          >
+            <v-toolbar-title >THÔNG TIN GIẤY ĐI ĐƯỜNG</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn
+                icon
+                dark
+                @click="dialogGiayDiDuong = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-card-text class="mx-0 my-0 py-0 px-0">
+            <giay-di-duong :uid="zaloUid"></giay-di-duong>
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            
+            <v-btn color="red" class="white--text mr-2" :loading="loading" :disabled="loading" @click="dialogGiayDiDuong = false">
               <v-icon left>
                 mdi-close
               </v-icon>
@@ -179,14 +254,17 @@
   import $ from 'jquery'
   import Search from './FormTimKiem.vue'
   import Pagination from './Pagination'
+  import GiayDiDuong from './MauGiayDiDuong.vue'
   export default {
     name: 'Customers',
     components: {
     'tim-kiem': Search,
+    'giay-di-duong': GiayDiDuong,
     'pagination': Pagination
     },
     data () {
       return {
+        zaloUid: '',
         loading: false,
         loadingData: false,
         processingAction: false,
@@ -208,6 +286,15 @@
         showAdvanceSearch: false,
         selected: [],
         dataInputSearch: '',
+        validFormRut: true,
+        typeAction: '',
+        giayDiDuongRut: '',
+        lyDoRut: '',
+        dataSearchOutPut: '',
+        dialogGiayDiDuong: false,
+        required: [
+          v => !!v || 'Thông tin bắt buộc'
+        ],
         headers: [
           {
             sortable: false,
@@ -294,6 +381,7 @@
       translateLichNgay (data) {
         try {
           let input = JSON.parse(data)
+          let dataOut = ''
           let ngayTuan = input['ngayTuan']
           let ngayThang = input['ngayThang']
           if (ngayTuan && ngayTuan.length) {
@@ -308,11 +396,12 @@
               ngayTuanString += day
             })
             ngayTuanString = ngayTuanString.trim().substring(0, ngayTuanString.trim().length - 1)
-            return ngayTuanString
+            dataOut += ngayTuanString
           }
           if (ngayThang && ngayThang.length) {
-            return ngayThang.toString().replace(/,/g, "; ")
+            dataOut = dataOut + ' - Các ngày: ' + ngayThang.toString().replace(/,/g, "; ")
           }
+          return dataOut
           
         } catch (error) {
           return ''
@@ -368,6 +457,7 @@
           hoVaTen: dataSearch && dataSearch['HoVaTen'] ? dataSearch['HoVaTen'] : '',
           noiCtTenCoQuan: dataSearch && dataSearch['NoiCtTenCoQuan'] ? dataSearch['NoiCtTenCoQuan'] : '',
           uyBanNhanDanID: dataSearch && dataSearch.hasOwnProperty('UyBanNhanDanID') ? dataSearch['UyBanNhanDanID'] : '',
+          statusGuiTinNhan: dataSearch && dataSearch.hasOwnProperty('statusGuiTinNhan') ? dataSearch['statusGuiTinNhan'] : -1,
           status: 1,
           typeSearch: 'giaydiduong'
         }
@@ -390,7 +480,7 @@
       translateStatus (item) {
         let vm = this
         let filter = {
-          data: Object.assign(item, {status: 2})
+          data: Object.assign(item, {status: 2, ghiChu: vm.lyDoRut})
         }
         vm.$store.dispatch('duyetGiayDiDuong', filter).then(function (result) {
           vm.$store.commit('SHOW_SNACKBAR', {
@@ -400,6 +490,7 @@
           })
           vm.processingAction = false
           vm.getDanhSachDaCap(0)
+          vm.dialog = false
         }).catch(function () {
           vm.$store.commit('SHOW_SNACKBAR', {
             show: true,
@@ -410,13 +501,95 @@
         })
         
       },
+      xemGiayDiduong (item) {
+        let vm = this
+        vm.zaloUid = item.maQR
+        vm.dialogGiayDiDuong = true
+      },
+      showRutGiayDiDuong (type, item) {
+        let vm = this
+        vm.typeAction = type
+        vm.lyDoRut = ''
+        if (type === 'multiple') {
+          if (vm.selected.length === 0) {
+            vm.$store.commit('SHOW_SNACKBAR', {
+              show: true,
+              text: 'Vui lòng chọn người muốn rút giấy đi đường',
+              color: 'error',
+            })
+            return
+          }
+          vm.dialog = true
+        } else if (type === 'all') {
+          if (!vm.totalItem) {
+            vm.$store.commit('SHOW_SNACKBAR', {
+              show: true,
+              text: 'Không có giấy đi đường',
+              color: 'error',
+            })
+            return
+          } else {
+            vm.dialog = true
+          }
+        } else {
+          vm.giayDiDuongRut = item
+          vm.dialog = true
+        }
+      },
+      submitTranslate () {
+        let vm = this
+        if (vm.$refs.formRut.validate()) {
+          if (vm.typeAction === 'multiple') {
+            vm.translateStatusMultiple()
+          } else if (vm.typeAction === 'all') {
+            vm.translateStatusAll()
+          } else {
+            vm.translateStatus(vm.giayDiDuongRut)
+          }
+        }
+      },
+      translateStatusAll () {
+        let vm = this
+        if (vm.showAdvanceSearch) {
+          vm.dataSearchOutPut = vm.$refs.timkiem.getDataOutPut()
+          console.log('dataSearch', vm.dataSearchOutPut)     
+        }
+          
+        let filter = {
+          data: {
+            // ids: arrIds,
+            status: 2,
+            ghiChu: vm.lyDoRut
+          }
+        }
+        let textConfirm = 'Bạn có chắc chắn rút tất cả ' + vm.totalItem + ' giấy đi đường?'
+        let x = confirm(textConfirm)
+        if (x) {
+          vm.$store.dispatch('duyetNhieuGiayDiDuong', filter).then(function (result) {
+            vm.$store.commit('SHOW_SNACKBAR', {
+              show: true,
+              text: 'Rút thành công',
+              color: 'success',
+            })
+            vm.getDanhSachDaCap(0)
+            vm.selected = []
+            vm.dialog = false
+          }).catch(function () {
+            vm.$store.commit('SHOW_SNACKBAR', {
+              show: true,
+              text: 'Rút thất bại',
+              color: 'error',
+            })
+          })
+        }
+      },
       translateStatusMultiple () {
         let vm = this
         let arrIds = ''
         if (vm.selected.length === 0) {
           vm.$store.commit('SHOW_SNACKBAR', {
             show: true,
-            text: 'Vui lòng chọn người muốn cấp giấy đi đường',
+            text: 'Vui lòng chọn người muốn rút giấy đi đường',
             color: 'error',
           })
           return
@@ -428,7 +601,8 @@
         let filter = {
           data: {
             ids: arrIds,
-            status: 2
+            status: 2,
+            ghiChu: vm.lyDoRut
           }
         }
         console.log('filter', filter)
@@ -446,6 +620,7 @@
             })
             vm.getDanhSachDaCap(0)
             vm.selected = []
+            vm.dialog = false
           }).catch(function () {
             vm.$store.commit('SHOW_SNACKBAR', {
               show: true,

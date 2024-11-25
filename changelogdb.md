@@ -109,5 +109,73 @@ update t_cosoyte set UyBanNhanDanID = 0;
 #update 03/09/2021
 ALTER TABLE t_giaydiduong modify `NgayCap` varchar(20) DEFAULT NULL;
 ALTER TABLE t_giaydiduong modify `ThoiHan` varchar(20) DEFAULT NULL;
+----------------------------------------------------------------------------------------------------------
+#update 08/09/2021
+CREATE TABLE IF NOT EXISTS t_thuoc (
+ID bigint(20) NOT NULL AUTO_INCREMENT,
+TenThuoc varchar(256) NOT NULL,
+MaThuoc varchar(128) DEFAULT NULL,
+GhiChu varchar(512) DEFAULT NULL,
+NgayNhap varchar(10) DEFAULT NULL,
+NgayHetHan varchar(10) DEFAULT NULL,
+Status tinyint(1) DEFAULT 0,
+PRIMARY KEY (ID)
+) ;
+
+ALTER TABLE t_hangchothongbao ADD COLUMN  `UyBanNhanDanID` bigint(20) DEFAULT NULL;
+ALTER TABLE t_uybannhandan ADD COLUMN  `NotificationConfig` varchar(2048) DEFAULT NULL;
+----------------------------------------------------------------------------------------------------------
+#update 09/09/2021
+ALTER TABLE t_hangchothongbao MODIFY `UyBanNhanDanID` bigint(20) DEFAULT 0;
+update t_hangchothongbao set UyBanNhanDanID = 0;
+
+#update 10/09/2021
+ALTER TABLE t_lichtiemchung ADD COLUMN  `UyBanNhanDanID` bigint(20) DEFAULT 0;
+update t_lichtiemchung set UyBanNhanDanID = 0;
+ALTER TABLE vaccom.t_lichtiemchung ADD COLUMN  `UyBanNhanDanID` bigint(20) DEFAULT 0;
+ALTER TABLE vaccom.t_lichtiemchung ADD COLUMN  `TenCoSo` varchar(256) DEFAULT NULL;
+ALTER TABLE vaccom.t_lichtiemchung ADD COLUMN  `GioHenTiem` varchar(6) DEFAULT NULL;
+delete from t_nguoidung where chucdanh='citizen';
+ALTER TABLE vaccom.t_hangchothongbao ADD COLUMN  `status` bigint(10) DEFAULT 0;
+
+#update 11/09/2021
+ALTER TABLE vaccom.t_hangchothongbao ADD COLUMN  `mappingKey` bigint(10) DEFAULT 0;
+#update 13/09/2021
+ALTER TABLE vaccom.t_hangchothongbao ADD COLUMN  `errorCodeZalo` bigint(3) DEFAULT 1;
+ALTER TABLE vaccom.t_hangchothongbao ADD COLUMN  `createDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+#update 17/09/2021
+create table IF NOT EXISTS t_congdan (
+`ID` bigint not null auto_increment,
+`HoVaTen` varchar(128) NOT NULL,
+`NgaySinh` varchar(10) DEFAULT NULL,
+`GioiTinh` tinyint(4) DEFAULT 0,
+`DiaChiThuongTru` varchar(512) DEFAULT NULL,
+`TinhThanh_Ma` varchar(30) DEFAULT NULL,
+`TinhThanh_Ten` varchar(128) DEFAULT NULL,
+`QuanHuyen_Ma` varchar(30) DEFAULT NULL,
+`QuanHuyen_Ten` varchar(128) DEFAULT NULL,
+`PhuongXa_Ma` varchar(30) DEFAULT NULL,
+`PhuongXa_Ten` varchar(128) DEFAULT NULL,
+`CMTCCCD` varchar(20) DEFAULT NULL,
+`NoiCap` varchar(128) DEFAULT NULL,
+`NgayCap` varchar(20) DEFAULT NULL,
+`SoMuiTiem` tinyint(4) DEFAULT 0,
+`SoDienThoai` varchar(20) DEFAULT NULL,
+primary key (ID)
+)
+---
+ALTER TABLE vaccom.t_nguoitiemchung ADD COLUMN  `CongDan_ID` bigint(20) DEFAULT 0;
+ALTER TABLE vaccom.t_nguoitiemchung ADD COLUMN  `SoMuiTiem` tinyint(4) DEFAULT 0;
+ALTER TABLE vaccom.t_nguoitiemchung ADD COLUMN  `NgayTiemCuoi` varchar(20) DEFAULT NULL;
+---
+ALTER TABLE vaccom.t_muitiemchung ADD COLUMN  `CongDan_ID` bigint(20) DEFAULT 0;
+ALTER TABLE vaccom.t_nguoidung ADD COLUMN  `CongDan_ID` bigint(20) DEFAULT 0;
+ALTER TABLE vaccom.t_giaydiduong ADD COLUMN  `CongDan_ID` bigint(20) DEFAULT 0;
+
+ALTER TABLE vaccom.t_muitiemchung DROP COLUMN `NguoiTiemChungID`;
+
+
+
 
 

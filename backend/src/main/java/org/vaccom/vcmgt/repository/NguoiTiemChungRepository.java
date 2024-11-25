@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.vaccom.vcmgt.constant.DBConstant;
+import org.vaccom.vcmgt.entity.MuiTiemChung;
 import org.vaccom.vcmgt.entity.NguoiTiemChung;
 import org.vaccom.vcmgt.entity.PhieuHenTiem;
 
@@ -23,12 +24,21 @@ public interface NguoiTiemChungRepository extends JpaRepository<NguoiTiemChung, 
 	
 	public long countByCmtcccd(String cmtcccd);
 
-	public NguoiTiemChung findById(long id);
+	public long countBySoDienThoai(String sdt);
+
+//	public NguoiTiemChung findById(long id);
+
 	
 	public List<NguoiTiemChung> findByCmtcccd(String cmtcccd);
 
+
+	public NguoiTiemChung findBycongDanID(long id);
+
 	@Query(value="SELECT * FROM " + DBConstant._NGUOITIEMCHUNG_TABLE_NAME + " WHERE MaQR = :maQr", nativeQuery = true)
 	public NguoiTiemChung findByMaQR(@Param(value = "maQr") String maQr);
+
+	@Query(value="SELECT * FROM " + DBConstant._NGUOITIEMCHUNG_TABLE_NAME + " n WHERE n.CMTCCCD = :cmtcccd", nativeQuery = true)
+	public NguoiTiemChung findByCMTCCCD(@Param(value = "cmtcccd") String cmtcccd);
 	
 	
 	@Query(value = "SELECT count(*) FROM " + DBConstant._NGUOITIEMCHUNG_TABLE_NAME
@@ -47,6 +57,8 @@ public interface NguoiTiemChungRepository extends JpaRepository<NguoiTiemChung, 
 			@Param(value = "hovaten") String hovaten, @Param(value = "diabancosoid") Long diabancosoid,
 			@Param(value = "cosoytema") String cosoytema, @Param(value = "page") Integer page,
 			@Param(value = "size") Integer size);
-	
+
+
+
 
 }

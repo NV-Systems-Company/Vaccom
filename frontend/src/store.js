@@ -165,7 +165,13 @@ export default new Vuex.Store({
           headers: {
           },
           params: {
-            cosoyteid: filter.id
+            cosoyteid: filter.hasOwnProperty('id') ? filter.id : '',
+            tinhthanhma: filter.hasOwnProperty('tinhthanhma') ? filter.tinhthanhma : '',
+            quanhuyenma: filter.hasOwnProperty('quanhuyenma') ? filter.quanhuyenma : '',
+            phuongxama: filter.hasOwnProperty('phuongxama') ? filter.phuongxama : '',
+            tinhthanhten: '',
+            quanhuyenten: '',
+            phuongxaten: '',
           }
         }
         if (filter.hasOwnProperty('page')) {
@@ -536,6 +542,29 @@ export default new Vuex.Store({
         }
         let dataPost = filter.data
         axios.put('/rest/v1/app/update/lichtiemchung/' + filter.id + '/donglichtiem', dataPost, param).then(function (response) {
+          let serializable = response.data
+          resolve(serializable)
+        }).catch(function (error) {
+          reject(error)
+        })
+      })
+    },
+    addNguoiTiemVaoLich ({commit, state}, filter) {
+      return new Promise((resolve, reject) => {
+        let param = {
+          headers: {
+          },
+          params: {
+          }
+        }
+        try {
+          if (Vue.$cookies.get('Token')) {
+            param.headers['Authorization'] = 'Bearer ' + Vue.$cookies.get('Token')
+          }
+        } catch (error) {
+        }
+        let dataPost = filter
+        axios.post('/rest/v1/app/add/phieuhentiem/list', dataPost, param).then(function (response) {
           let serializable = response.data
           resolve(serializable)
         }).catch(function (error) {
@@ -946,7 +975,8 @@ export default new Vuex.Store({
         } catch (error) {
         }
         let dataPost = {
-          status: filter.data.status
+          status: filter.data.status,
+          ghiChu: filter.data.ghiChu
         }
         axios.put('/rest/v1/app/update/giaydiduong/' + filter.data.id, dataPost, param).then(function (response) {
           let serializable = response.data
@@ -970,7 +1000,8 @@ export default new Vuex.Store({
         }
         let dataPost = {
           listIdUpdate: filter.data.ids,
-          status: filter.data.status
+          status: filter.data.status,
+          ghiChu: filter.data.ghiChu
         }
         axios.put('/rest/v1/app/update/giaydiduong/0', dataPost, param).then(function (response) {
           let serializable = response.data
@@ -986,9 +1017,6 @@ export default new Vuex.Store({
           headers: {
           },
           params: {
-            cmtcccd: filter.hasOwnProperty('cmtcccd') ? filter.cmtcccd : '',
-            hovaten: filter.hasOwnProperty('hovaten') ? filter.hovaten : '',
-            status: filter.hasOwnProperty('status') ? filter.status : ''
           }
         }
         if (filter.hasOwnProperty('page')) {
@@ -1002,8 +1030,16 @@ export default new Vuex.Store({
           }
         } catch (error) {
         }
+        let dataPost = {
+          cmtcccd: filter.hasOwnProperty('cmtcccd') ? filter.cmtcccd : '',
+          hoVaTen: filter.hasOwnProperty('hoVaTen') ? filter.hoVaTen : '',
+          noiCtTenCoQuan: filter.hasOwnProperty('noiCtTenCoQuan') ? filter.noiCtTenCoQuan : '',
+          uyBanNhanDanID: filter.hasOwnProperty('uyBanNhanDanID') ? filter.uyBanNhanDanID : '',
+          statusGuiTinNhan: filter.hasOwnProperty('statusGuiTinNhan') ? filter.statusGuiTinNhan : -1,
+          status: filter.hasOwnProperty('status') ? filter.status : ''
+        }
         let url = '/rest/v1/app/get/' + filter.typeSearch + '/0'
-        axios.get(url, param).then(function (response) {
+        axios.post(url, dataPost, param).then(function (response) {
           let serializable = response.data
           resolve(serializable)
         }).catch(function (error) {
@@ -1090,6 +1126,63 @@ export default new Vuex.Store({
         })
       })
     },
+    updateAllGiayDiDuong ({commit, state}, filter) {
+      return new Promise((resolve, reject) => {
+        let param = {
+          headers: {
+          },
+          params: {
+            statusUpdate: filter.statusUpdate
+          }
+        }
+
+        try {
+          if (Vue.$cookies.get('Token')) {
+            param.headers['Authorization'] = 'Bearer ' + Vue.$cookies.get('Token')
+          }
+        } catch (error) {
+        }
+        let dataPost = {
+          cmtcccd: filter.hasOwnProperty('cmtcccd') ? filter.cmtcccd : '',
+          hoVaTen: filter.hasOwnProperty('hoVaTen') ? filter.hoVaTen : '',
+          noiCtTenCoQuan: filter.hasOwnProperty('noiCtTenCoQuan') ? filter.noiCtTenCoQuan : '',
+          uyBanNhanDanID: filter.hasOwnProperty('uyBanNhanDanID') ? filter.uyBanNhanDanID : '',
+          status: filter.hasOwnProperty('status') ? filter.status : ''
+        }
+        let url = '/rest/v1/app/update/all/giaydiduong'
+        axios.put(url, dataPost, param).then(function (response) {
+          let serializable = response.data
+          resolve(serializable)
+        }).catch(function (error) {
+          reject([])
+        })
+      })
+    },
+    getThongTinPhieuHen ({commit, state}, filter) {
+      return new Promise((resolve, reject) => {
+        let param = {
+          headers: {
+          },
+          params: {
+            maQr: filter.maQr
+          }
+        }
+        try {
+          if (Vue.$cookies.get('Token')) {
+            param.headers['Authorization'] = 'Bearer ' + Vue.$cookies.get('Token')
+          }
+        } catch (error) {
+        }
+        console.log('filter', filter)
+        let url = '/rest/v1/app/get/phieuhen-maqr'
+        axios.get(url, param).then(function (response) {
+          let serializable = response.data
+          resolve(serializable)
+        }).catch(function (error) {
+          reject([])
+        })
+      })
+    },
     getNguoiTiemChung ({commit, state}, filter) {
       return new Promise((resolve, reject) => {
         let param = {
@@ -1100,11 +1193,25 @@ export default new Vuex.Store({
             nhomdoituong: filter.hasOwnProperty('nhomdoituong') ? filter.nhomdoituong : -1,
             ngaydangki: filter.hasOwnProperty('ngaydangki') ? filter.ngaydangki : -1,
             hovaten: filter.hasOwnProperty('hovaten') ? filter.hovaten : -1,
-            diabancosoid: filter.hasOwnProperty('diabancosoid') ? filter.diabancosoid : -1,
+            // diabancosoid: filter.hasOwnProperty('diabancosoid') ? filter.diabancosoid : -1,
             cosoytema: filter.hasOwnProperty('cosoytema') ? filter.cosoytema : -1,
             tinhtrangdangky: filter.hasOwnProperty('tinhtrangdangky') ? filter.tinhtrangdangky : '',
             kiemtratrung: filter.hasOwnProperty('kiemtratrung') ? filter.kiemtratrung : '',
+            tinhthanhma: filter.hasOwnProperty('tinhthanhma') ? filter.tinhthanhma : '',
+            quanhuyenma: filter.hasOwnProperty('quanhuyenma') ? filter.quanhuyenma : '',
+            phuongxama: filter.hasOwnProperty('phuongxama') ? filter.phuongxama : '',
+            tinhthanhten: filter.hasOwnProperty('tinhthanhten') ? filter.tinhthanhten : '',
+            quanhuyenten: filter.hasOwnProperty('quanhuyenten') ? filter.quanhuyenten : '',
+            phuongxaten: filter.hasOwnProperty('phuongxaten') ? filter.phuongxaten : '',
+            diachinoio: filter.hasOwnProperty('diachinoio') ? filter.diachinoio : '',
+            loaiThuocTiem: filter.hasOwnProperty('loaiThuocTiem') ? filter.loaiThuocTiem : ''
           }
+        }
+        if (filter.hasOwnProperty('isDatTieuChuan')) {
+          param.params['isDatTieuChuan'] = filter.isDatTieuChuan
+        }
+        if (filter.hasOwnProperty('lichTiemChungId')) {
+          param.params['lichTiemChungId'] = filter.lichTiemChungId
         }
         if (filter.hasOwnProperty('page')) {
           param.params['page'] = filter.page
@@ -1124,6 +1231,32 @@ export default new Vuex.Store({
           resolve(serializable)
         }).catch(function (error) {
           reject([])
+        })
+      })
+    },
+    locDanhSachNguoiTiemThieuThongTin ({commit, state}, filter) {
+      return new Promise((resolve, reject) => {
+        let param = {
+          headers: {
+          },
+          params: {}
+        }
+        if (filter.hasOwnProperty('page')) {
+          param.params['page'] = filter.page
+          param.params['size'] = filter.size
+        }
+        try {
+          if (Vue.$cookies.get('Token')) {
+            param.headers['Authorization'] = 'Bearer ' + Vue.$cookies.get('Token')
+          }
+        } catch (error) {
+        }
+        let dataPost = filter.data
+        axios.post('/rest/v1/app/get/search-nguoitiemchung', dataPost, param).then(function (response) {
+          let serializable = response.data
+          resolve(serializable)
+        }).catch(function (error) {
+          reject(error)
         })
       })
     },
@@ -1176,6 +1309,12 @@ export default new Vuex.Store({
         }
         let dataPost = {
           ids: filter['data']['ids']
+        }
+        if (filter['data'].hasOwnProperty('syncAll')) {
+          dataPost = {
+            isAutoAccept: true,
+            countAccept: 1
+          }
         }
         axios.put(url, dataPost, param).then(function (response) {
           let serializable = response.data
@@ -1415,6 +1554,30 @@ export default new Vuex.Store({
           reject(xhr)
         })
       })
-    }
+    },
+    importDanhSachPhieu ({commit, state}, filter) {
+      return new Promise((resolve, reject) => {
+        let param = {
+          headers: {
+          },
+          params: {}
+        }
+        try {
+          if (Vue.$cookies.get('Token')) {
+            param.headers['Authorization'] = 'Bearer ' + Vue.$cookies.get('Token')
+          }
+        } catch (error) {
+        }
+        let dataPost = new FormData()
+        for (let key in filter) {
+          dataPost.append(key, filter[key])
+        }
+        axios.post('/rest/v1/import/phieuhentiem/exceldata', dataPost, param).then(function (response) {
+          resolve(response)
+        }).catch(xhr => {
+          reject(xhr)
+        })
+      })
+    },
   },
 })

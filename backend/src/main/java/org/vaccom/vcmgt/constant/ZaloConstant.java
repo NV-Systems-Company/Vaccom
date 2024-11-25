@@ -2,10 +2,6 @@ package org.vaccom.vcmgt.constant;
 
 public class ZaloConstant {
     //Zalo Notification
-    public final static String template_id_add_NguoiDung = "211214";
-    public final static String template_id_add_LichHenTiem = "211214";
-    public final static String template_id_add_ChungNhan = "211214";
-    public final static String template_id_add_GiayDiDuong = "211214";
 
     // Khung của Body Zalo
     public final static String phone = "phone";
@@ -27,12 +23,16 @@ public class ZaloConstant {
     public final static String LoaiThuocTiem = "LoaiThuocTiem";
     public final static String DonViTiem = "DonViTiem";
     public final static String SoDonViCap = "sodonvicap";
+    public final static String CMTCCCD = "cmtcccd";
 
+    public final static String NgayCap = "ngaycap";
 
 
     public final static String Loai_XacNhan_NguoiTiemChung = "AUTH_ACC";
     public final static String Loai_Giay_Di_Duong = "GIAY_DI_DUONG";
     public final static String Loai_Hen_TiemChung = "HEN_TIEM_CHUNG";
+    public final static String Loai_Sua_Giay_Di_Duong = "SUA_GIAY_DI_DUONG";
+    public final static String Access_Token = "ACCESS_TOKEN";
 
 
     // Notification chứng nhận tiêm chủng
@@ -44,7 +44,24 @@ public class ZaloConstant {
 
     // Notifcation Giay di đường
     public final static String DonViCap = "Donvicap";
+    public final static String statusGuiTinNhan = "statusGuiTinNhan";
 
     public final static String LinkQrCode = "LinkQrCode";
+
+
+    // response trả về
+    public final static String error = "error";
+    public final static String message = "message";
+
+    // SMS config
+    public final static String account = "account";
+    public final static String password = "password";
+
+    // Status gui tin
+    public final static long CHUA_GUI = 0;
+    public final static long GUI_ZALO_THANH_CONG = 1;
+    public final static long GUI_SMS_THANH_CONG = 2;
+    public final static long GUI_THAT_BAI = 3;
+
 
 }

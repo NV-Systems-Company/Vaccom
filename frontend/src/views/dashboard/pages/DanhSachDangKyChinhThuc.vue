@@ -19,7 +19,7 @@
           Lọc danh sách
         </v-btn>
         <v-card-text v-if="showAdvanceSearch">
-          <tim-kiem ref="timkiem" v-on:trigger-search="searchDangKyTiem" v-on:trigger-cancel="cancelSearchDangKyTiem"></tim-kiem>
+          <tim-kiem ref="timkiem" :loaiVaccine="loaiVaccine" :addLichTiem="addLichTiem" :addGoiTiem="true" v-on:trigger-search="searchDangKyTiem" v-on:trigger-cancel="cancelSearchDangKyTiem"></tim-kiem>
         </v-card-text>
         <v-card-text :class="breakpointName !== 'lg' ? 'px-0' : 'pt-0'">
           <div :class="breakpointName === 'xs' ? 'mb-3' : 'd-flex my-3'">
@@ -29,20 +29,30 @@
             <span class="mr-auto pt-2" v-else>
               Tổng số: <span style="font-weight: bold; color: green">{{totalItem}}</span> người
             </span>
-            <v-btn color="#0072bc" small class="mx-0 mr-4" @click.stop="exportDanhSach" :loading="processingAction" :disabled="processingAction">
+            <v-btn v-if="!addLichTiem" color="#0072bc" small class="mx-0 mr-4" @click.stop="exportDanhSach" :loading="processingAction" :disabled="processingAction">
               <v-icon left size="20">
                 mdi-export
               </v-icon>
               Xuất danh sách
             </v-btn>
-            <v-btn color="orange" small class="mx-0" @click.stop="translateStatus('multiple')" :loading="processingAction" :disabled="processingAction">
+            <v-btn v-if="!addLichTiem" color="orange" small class="mx-0" @click.stop="translateStatus('multiple')" :loading="processingAction" :disabled="processingAction">
               <v-icon left size="20">
                 mdi-backup-restore
               </v-icon>
-              Rút đăng ký
+              Chuyển về đăng ký ban đầu
             </v-btn>  
           </div>
-          
+          <v-flex xs12 style="text-align: right;">
+            <!-- <v-checkbox
+              color="#0072bc"
+              class="mt-0 checkboxCmt d-inline-block"
+              v-model="dangkythieuthongtin"
+            >
+              <template v-slot:label>
+                <span style="font-weight: 500;color: #0072bc">LỌC ĐĂNG KÝ THIẾU THÔNG TIN</span>
+              </template>
+            </v-checkbox> -->
+          </v-flex>
           <v-data-table
             v-model="selected"
             show-select
@@ -84,30 +94,34 @@
                 <p class="mb-2">{{ item.diaChiNoiO}} - {{item.phuongXaTen}} - {{item.quanHuyenTen}} - {{item.tinhThanhTen}}</p>
             </template>
             <template v-slot:item.muiTiemChung="{ item, index }">
-              <div style="width: 250px;height: 100%;">
-                <v-layout wrap style="height: 100%;" v-if="item.muiTiemChung && item.muiTiemChung.length">
-                  <v-flex class="xs12 md6" style="border-right: 1px solid #dedede;" v-for="(item2, index2) in item.muiTiemChung" :key="index2">
-                    <p class="py-2 mb-0" v-if="item.muiTiemChung && item.muiTiemChung[index2]['lanTiem'] == 1" style="text-align: left;">
-                      <span>Ngày tiêm: {{item.muiTiemChung[index2]['ngayTiemChung']}}</span><br>
-                      <span>Loại thuốc: {{item.muiTiemChung[index2]['loaiThuocTiem']}}</span><br>
-                      <span>Địa điểm: {{item.muiTiemChung[index2]['diaDiemTiemChung']}}</span>
+              <div style="width: 100%;height: 100%;" v-if="item.muiTiemChung && item.muiTiemChung.length">
+                <v-layout wrap style="height: 100%;" >
+                  <v-flex class="xs12 md6" style="border-right: 1px solid #dedede;" v-for="(item2, index2) in item.muiTiemChung" :key="index2"
+                    
+                  >
+                    <p v-if="item.muiTiemChung && item.muiTiemChung[index2]['lanTiem'] == 1" class="py-2 mb-0" style="text-align: left;">
+                      <span>Ngày tiêm: <span style="font-weight: bold">{{item.muiTiemChung[index2]['ngayTiemChung']}}</span></span><br>
+                      <span>Loại thuốc: <span style="font-weight: bold">{{item.muiTiemChung[index2]['loaiThuocTiem']}}</span></span><br>
                     </p>
                   </v-flex>
-                  <v-flex class="xs12 md6" v-for="(item2, index2) in item.muiTiemChung" :key="index2">
-                    <p class="py-2 mb-0 pl-2" v-if="item.muiTiemChung && item.muiTiemChung[index2]['lanTiem'] == 2" style="text-align: left;">
+                  <v-flex class="xs12 md6" v-for="(item2, index2) in item.muiTiemChung" :key="index2"
+                    
+                  >
+                    <p v-if="item.muiTiemChung && item.muiTiemChung[index2]['lanTiem'] == 2" class="py-2 mb-0 pl-2" style="text-align: left;">
                       <span>Ngày tiêm: {{item.muiTiemChung[index2]['ngayTiemChung']}}</span><br>
                       <span>Loại thuốc: {{item.muiTiemChung[index2]['loaiThuocTiem']}}</span><br>
-                      <span>Địa điểm: {{item.muiTiemChung[index2]['diaDiemTiemChung']}}</span>
                     </p>
                   </v-flex>
                 </v-layout>
-                <v-layout wrap style="height: 100%;" v-else>
+              </div>
+              <div style="width: 250px;height: 100%;" v-else>
+                <v-layout wrap style="height: 100%;">
                   <v-flex class="xs12 md6" style="border-right: 1px solid #dedede;"></v-flex>
                   <v-flex class="xs12 md6"></v-flex>
                 </v-layout>
               </div>
             </template>
-            <template v-slot:item.action="{ item }">
+            <template v-if="!addLichTiem" v-slot:item.action="{ item }">
               <div style="width: 150px">
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
@@ -123,24 +137,24 @@
                       <v-icon size="22">mdi-backup-restore</v-icon>
                     </v-btn>
                   </template>
-                  <span>Rút đăng ký</span>
+                  <span>Chuyển về đăng ký ban đầu</span>
                 </v-tooltip>
-                <v-tooltip top>
+                <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn @click="viewDetail(item)" color="blue" text icon class="ml-2" v-bind="attrs" v-on="on">
                       <v-icon size="22">mdi-account-details-outline</v-icon>
                     </v-btn>
                   </template>
                   <span>Thông tin chi tiết</span>
-                </v-tooltip>
-                <v-tooltip top v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo' || userLogin['role_name'] == 'CanBoYTe'">
+                </v-tooltip> -->
+                <!-- <v-tooltip top v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo' || userLogin['role_name'] == 'CanBoYTe'">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn @click="addMuiTiem(item)" color="blue" text icon class="ml-2" v-bind="attrs" v-on="on">
                       <v-icon size="22">mdi-plus</v-icon>
                     </v-btn>
                   </template>
                   <span>Thêm thông tin mũi tiêm</span>
-                </v-tooltip>
+                </v-tooltip> -->
               </div>
               
             </template>
@@ -305,10 +319,10 @@
                   <span style="font-weight: bold">MŨI TIÊM {{item['lanTiem']}}</span>
                 </div>
                 <p class="mb-2">Tên vắc xin: {{item['loaiThuocTiem']}}</p>
-                <p class="mb-2">Nơi sản xuất: {{item['noiSanXuat']}}</p>
-                <p class="mb-2">Lô vắc xin: {{item['soLoThuoc']}}</p>
+                <!-- <p class="mb-2">Nơi sản xuất: {{item['noiSanXuat']}}</p> -->
+                <!-- <p class="mb-2">Lô vắc xin: {{item['soLoThuoc']}}</p> -->
                 <p class="mb-2">Ngày tiêm: {{item['ngayTiemChung']}}</p>
-                <p class="mb-2">Địa điểm tiêm: {{item['diaDiemTiemChung']}}</p>
+                <!-- <p class="mb-2">Địa điểm tiêm: {{item['diaDiemTiemChung']}}</p> -->
               </v-card>
             </v-layout>
             <p v-else>Chưa có lịch sử tiêm chủng</p>
@@ -530,6 +544,7 @@
   import Pagination from './Pagination'
   export default {
     name: 'Customers',
+    props: ['addLichTiem', 'loaiVaccine', 'lichTiemChungId'],
     components: {
     'tim-kiem': Search,
     'pagination': Pagination
@@ -557,6 +572,9 @@
         pageCount: 0,
         itemsPerPage: 50,
         items: [],
+        dangkythieuthongtin: false,
+        dangkydattieuchuan: true,
+        searchAll: true,
         detaiInfo: '',
         advanceSearchData: {
           codeNumber: '',
@@ -654,11 +672,89 @@
     computed: {
       breakpointName () {
         return this.$store.getters.getBreakpointName
+      }
+    },
+    watch: {
+      dangkythieuthongtin (val) {
+        if (val) {
+          this.searchAll = false
+          this.locDanhSachNguoiTiemThieuThongTin(0)
+        } else {
+          if (!this.searchAll) {
+            this.getDanhSachDangKyChinhThuc(0)
+          }
+        }
       },
+      dangkydattieuchuan (val) {
+        this.getDanhSachDangKyChinhThuc(0)
+      },
+      addLichTiem (val) {
+        if (val) {
+          let vm = this
+          vm.headers = [
+            {
+              sortable: false,
+              text: 'STT',
+              align: 'center',
+              value: 'index'
+            },
+            {
+              sortable: false,
+              text: 'Họ tên',
+              align: 'left',
+              value: 'hoVaTen'
+            },
+            {
+              sortable: false,
+              text: 'Số CMND/ CCCD',
+              align: 'left',
+              value: 'cmtcccd'
+            },
+            // {
+            //   sortable: false,
+            //   text: 'Mã nhóm đối tượng',
+            //   align: 'left',
+            //   value: 'nhomDoiTuong'
+            // },
+            {
+              sortable: false,
+              text: 'Số điện thoại',
+              align: 'left',
+              value: 'soDienThoai'
+            },
+            {
+              sortable: false,
+              text: 'Địa chỉ',
+              align: 'left',
+              value: 'diaChiNoiO'
+            },
+            {
+              sortable: false,
+              text: 'Thông tin mũi tiêm',
+              align: 'center',
+              value: 'muiTiemChung',
+              class: 'px-0'
+            }
+          ]
+          vm.getDanhSachDangKyChinhThuc(0)
+        }
+      }
     },
     methods: {
+      initGetDanhSach () {
+        let vm = this
+        vm.searchAll = true
+        vm.dangkythieuthongtin = false
+        vm.page = 0
+        vm.totalItem = 0
+        vm.pageCount = 0
+        vm.selected = []
+        vm.getDanhSachDangKyChinhThuc(0, vm.dataInputSearch)
+      },
       searchDangKyTiem (data) {
         let vm = this
+        vm.searchAll = true
+        vm.dangkythieuthongtin = false
         console.log('dataSearch', data)
         vm.dataInputSearch = data
         vm.page = 0
@@ -712,9 +808,49 @@
           diabancosoid: dataSearch && dataSearch.hasOwnProperty('DiaBanCoSo_ID') ? dataSearch['DiaBanCoSo_ID'] : '',
           cosoytema: dataSearch && dataSearch['CoSoYTe_Ma'] ? dataSearch['CoSoYTe_Ma'] : '',
           kiemtratrung: dataSearch && dataSearch['KiemTraTrung'] ? dataSearch['KiemTraTrung'] : '',
+          tinhthanhma: dataSearch && dataSearch['TinhThanh_Ma'] ? dataSearch['TinhThanh_Ma'] : '',
+          quanhuyenma: dataSearch && dataSearch['QuanHuyen_Ma'] ? dataSearch['QuanHuyen_Ma'] : '',
+          phuongxama: dataSearch && dataSearch['PhuongXa_Ma'] ? dataSearch['PhuongXa_Ma'] : '',
+          tinhthanhten: '',
+          quanhuyenten: '',
+          phuongxaten: '',
+          diachinoio: dataSearch && dataSearch['diachinoio'] ? dataSearch['diachinoio'] : '',
+          loaiThuocTiem: dataSearch && dataSearch['loaiThuocTiem'] ? dataSearch['loaiThuocTiem'] : '',
           typeSearch: 'danhsachdangkychinhthuc'
         }
+        if (vm.addLichTiem) {
+          filter['isDatTieuChuan'] = dataSearch && dataSearch['isDatTieuChuan'] ? 1 : 0
+          filter['lichTiemChungId'] = vm.lichTiemChungId
+        }
         vm.$store.dispatch('getNguoiTiemChung', filter).then(function(result) {
+          vm.loadingData = false
+          if (result) {
+            vm.items = result.hasOwnProperty('data') ? result.data : []
+            vm.totalItem = result.hasOwnProperty('total') ? result.total : 0
+            vm.pageCount = Math.ceil(vm.totalItem / vm.itemsPerPage)
+          } else {
+            vm.items = []
+            vm.totalItem = 0
+          }
+        }).catch(function () {
+          vm.items = []
+          vm.totalItem = 0
+          vm.loadingData = false
+        })
+      },
+      locDanhSachNguoiTiemThieuThongTin (pageIn) {
+        let vm = this
+        vm.loadingData = true
+        let filter = {
+          page: pageIn,
+          size: vm.itemsPerPage,
+          data: {
+            tinhtrangdangki: 1,
+            isSearchOr: true
+          }
+          
+        }
+        vm.$store.dispatch('locDanhSachNguoiTiemThieuThongTin', filter).then(function(result) {
           vm.loadingData = false
           if (result) {
             vm.items = result.hasOwnProperty('data') ? result.data : []
@@ -745,7 +881,13 @@
             hovaten: vm.dataInputSearch && vm.dataInputSearch['HoVaTen'] ? vm.dataInputSearch['HoVaTen'] : '',
             diabancosoid: vm.dataInputSearch && vm.dataInputSearch.hasOwnProperty('DiaBanCoSo_ID') ? vm.dataInputSearch['DiaBanCoSo_ID'] : '',
             cosoytema: vm.dataInputSearch && vm.dataInputSearch['CoSoYTe_Ma'] ? vm.dataInputSearch['CoSoYTe_Ma'] : '',
-            kiemtratrung: vm.dataInputSearch && vm.dataInputSearch['KiemTraTrung'] ? vm.dataInputSearch['KiemTraTrung'] : -1
+            kiemtratrung: vm.dataInputSearch && vm.dataInputSearch['KiemTraTrung'] ? vm.dataInputSearch['KiemTraTrung'] : -1,
+            tinhthanhma: vm.dataInputSearch && vm.dataInputSearch['TinhThanh_Ma'] ? vm.dataInputSearch['TinhThanh_Ma'] : '',
+            quanhuyenma: vm.dataInputSearch && vm.dataInputSearch['QuanHuyen_Ma'] ? vm.dataInputSearch['QuanHuyen_Ma'] : '',
+            phuongxama: vm.dataInputSearch && vm.dataInputSearch['PhuongXa_Ma'] ? vm.dataInputSearch['PhuongXa_Ma'] : '',
+            tinhthanhten: '',
+            quanhuyenten: '',
+            phuongxaten: ''
           }
         }
         vm.$store.dispatch('exportDanhSach', filter).then(function(result) {
@@ -761,7 +903,7 @@
           if (vm.selected.length === 0) {
             vm.$store.commit('SHOW_SNACKBAR', {
               show: true,
-              text: 'Vui lòng chọn người muốn rút đăng ký',
+              text: 'Vui lòng chọn người muốn chuyển về đăng ký ban đầu',
               color: 'success',
             })
             return
@@ -785,7 +927,7 @@
           vm.$store.dispatch('updateRegistrationStatus', filter).then(function (result) {
             vm.$store.commit('SHOW_SNACKBAR', {
               show: true,
-              text: 'Rút đăng ký thành công',
+              text: 'Chuyển đăng ký thành công',
               color: 'success',
             })
             vm.getDanhSachDangKyChinhThuc(0)
@@ -793,7 +935,7 @@
           }).catch(function () {
             vm.$store.commit('SHOW_SNACKBAR', {
               show: true,
-              text: 'Rút đăng ký thất bại',
+              text: 'Chuyển đăng ký thất bại',
               color: 'error',
             })
           })
@@ -947,7 +1089,11 @@
       changePage (config) {
         let vm = this
         vm.page = config.page
-        vm.getDanhSachDangKyChinhThuc(config.page, vm.dataInputSearch)
+        if (vm.dangkythieuthongtin) {
+          vm.locDanhSachNguoiTiemThieuThongTin(config.page)
+        } else {
+          vm.getDanhSachDangKyChinhThuc(config.page, vm.dataInputSearch)
+        }
       },
       editRegistration (item) {
         let vm = this
@@ -965,6 +1111,14 @@
             return String(date).slice(6,8) + '/' + String(date).slice(4,6) + '/' + String(date).slice(0,4)
           }
         }
+      },
+      getSelected () {
+        let vm = this
+        return vm.selected
+      },
+      resetSelected () {
+        let vm = this
+        vm.selected = []
       }
     },
   }

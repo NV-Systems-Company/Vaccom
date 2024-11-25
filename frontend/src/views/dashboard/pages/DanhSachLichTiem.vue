@@ -35,6 +35,7 @@
                 Thêm lịch tiêm
               </v-btn>
           </div>
+          <input v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo'" type="file" id="fileImport" @input="uploadFileImport($event)" style="display:none">
           <v-data-table
             :headers="headers"
             :items="items"
@@ -42,21 +43,25 @@
             class="elevation-1"
             no-data-text="Không có"
             :loading="loadingData"
+            :items-per-page="itemsPerPage"
             loading-text="Đang tải... "
           >
             <template v-slot:item.index="{ item, index }">
               <span>{{ (page + 1) * itemsPerPage - itemsPerPage + index + 1 }}</span>
+            </template>
+            <template v-slot:item.ngayBatDau="{ item, index }">
+                {{item.gioHenTiem}} - {{item.ngayBatDau}}
             </template>
             <template v-slot:item.tongSoMuiTiem="{ item, index }">
                 {{item.tongSoMuiTiem}}
                 <p class="mb-2">Số ca: {{ item.soCaTiem}} </p>
                 <p class="mb-2">Số mũi/ca: {{ item.soMuiMotCa}} </p>
             </template>
-            <template v-slot:item.loaiThuocTiem="{ item, index }">
+            <!-- <template v-slot:item.loaiThuocTiem="{ item, index }">
                 <p class="mb-2">Loại: {{ item.loaiThuocTiem}} </p>
                 <p class="mb-2">Nơi sx: {{ item.noiSanXuat}} </p>
                 <p class="mb-2">Hạn dùng: {{ item.hanSuDung}} </p>
-            </template>
+            </template> -->
             <template v-slot:item.bacSiKham="{ item, index }">
                 <p class="mb-2">{{ item.bacSiKham}} </p>
                 <p class="mb-2">{{ item.soDienThoai}} </p>
@@ -66,7 +71,7 @@
                 <p class="mb-2" v-if="item.tinhTrangLich == 1" style="color: red"> Đã đóng</p>
             </template>
             <template v-slot:item.action="{ item }">
-              <div style="width: 130px">
+              <div style="width: auto;">
                 <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn @click="editLichTiem(item)" color="blue" text icon class="" v-bind="attrs" v-on="on">
@@ -91,14 +96,21 @@
                   </template>
                   <span>Đóng kết thúc</span>
                 </v-tooltip>
-                <v-tooltip top>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="viewCaTiem(item)" color="green" text icon class="" v-bind="attrs" v-on="on">
-                      <v-icon size="22">mdi-collapse-all-outline</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Xem ca tiêm</span>
-                </v-tooltip>
+
+                <v-btn v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo'" @click="viewDanhSachTiem(item)" color="green" small class="ml-3"  :loading="processingAction" :disabled="processingAction">
+                  <v-icon size="20">mdi-collapse-all-outline</v-icon> &nbsp;
+                  Xem danh sách tiêm
+                </v-btn>
+                <!-- <v-btn v-if="userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo'" @click="pickFileImport(item)" color="orange" small class="ml-3" :loading="processingAction" :disabled="processingAction">
+                  <v-icon size="20">mdi-import</v-icon> &nbsp;
+                  Import danh sách tiêm
+                </v-btn> -->
+
+                <v-btn v-if="(userLogin['role_name'] == 'QuanTriHeThong' || userLogin['role_name'] == 'QuanTriCoSo') && item.tinhTrangLich == 0" @click="addNguoiTiem(item)" color="orange" small class="ml-3" :loading="processingAction" :disabled="processingAction">
+                  <v-icon size="20">mdi-import</v-icon> &nbsp;
+                  Thêm người tiêm
+                </v-btn>
+
               </div>
             </template>
           </v-data-table>
@@ -134,40 +146,74 @@
               lazy-validation
             >
                 <v-layout wrap>
-                    <!-- <v-autocomplete
-                        class="flex xs12 md12"
-                        hide-no-data
-                        :items="listCoSoYTe"
-                        v-model="coSoYTe"
-                        item-text="tenCoSo"
-                        item-value="id"
-                        clearable
-                        :rules="required"
-                        required
-                        outlined
-                        label="Cơ sở y tế"
-                        dense
-                    ></v-autocomplete> -->
+                    <v-autocomplete
+                      class="flex xs12 md12"
+                      hide-no-data
+                      :items="listUyBanNhanDan"
+                      v-model="thongTinLichTiem['UyBanNhanDan_ID']"
+                      item-text="tenCoQuan"
+                      item-value="id"
+                      outlined
+                      label="Ủy ban nhân dân"
+                      dense
+                      clearable
+                      :rules="required"
+                      required
+                    ></v-autocomplete>
                     <v-text-field
-                        class="flex xs12 md12"
-                        v-model="thongTinLichTiem.MaDot"
-                        outlined
-                        label="Mã đợt tiêm"
-                        placeholder="Mã đợt tiêm"
-                        prepend-inner-icon="mdi-account-check-outline"
-                        dense
-                        clearable
+                      label="Tên lịch tiêm chủng"
+                      class="flex xs12 md12"
+                      v-model="thongTinLichTiem.TenLich"
+                      dense
+                      outlined
+                      :rules="required"
+                      required
+                    ></v-text-field>
+                    <v-autocomplete
+                      class="flex xs12 md12"
+                      hide-no-data
+                      :items="listCoSoYTe"
+                      v-model="coSoYTe"
+                      item-text="tenCoSo"
+                      item-value="id"
+                      clearable
+                      :rules="required"
+                      required
+                      outlined
+                      label="Đơn vị tiêm"
+                      dense
+                    ></v-autocomplete>
+                    <v-text-field
+                      label="Địa điểm tiêm chủng"
+                      class="flex xs12 md12"
+                      v-model="thongTinLichTiem.DiaDiemTiemChung"
+                      dense
+                      outlined
+                      :rules="required"
+                      required
                     ></v-text-field>
                     <v-text-field
-                      label="Ngày bắt đầu"
-                      class="flex xs12 md6"
+                      label="Ngày tiêm"
+                      class="flex xs12 md6 pr-2"
                       v-model="startDateFormatted"
                       placeholder="dd/mm/yyyy, ddmmyyyy"
                       @blur="formatStartDate"
                       dense
                       outlined
+                      :rules="required"
+                        required
                     ></v-text-field>
                     <v-text-field
+                      label="Giờ tiêm chủng"
+                      class="flex xs12 md6 px-2"
+                      v-model="thongTinLichTiem.GioHenTiem"
+                      placeholder="hh:mm, hhmm"
+                      v-mask="'##:##'"
+                      dense
+                      outlined
+                      required
+                    ></v-text-field>
+                    <!-- <v-text-field
                       label="Ngày kết thúc"
                       class="flex xs12 md6 pl-2"
                       v-model="endDateFormatted"
@@ -175,14 +221,9 @@
                       @blur="formatEndDate"
                       dense
                       outlined
-                    ></v-text-field>
-                    <v-text-field
-                      label="Địa chỉ tiêm chủng"
-                      class="flex xs12 md12"
-                      v-model="thongTinLichTiem.DiaDiemTiemChung"
-                      dense
-                      outlined
-                    ></v-text-field>
+                      :rules="required"
+                        required
+                    ></v-text-field> -->
                     <v-text-field
                       label="Loại thuốc tiêm"
                       class="flex xs12 md6"
@@ -190,7 +231,7 @@
                       dense
                       outlined
                     ></v-text-field>
-                    <v-text-field
+                    <!-- <v-text-field
                       label="Nơi sản xuất"
                       class="flex xs12 md6 pl-2"
                       v-model="thongTinLichTiem.NoiSanXuat"
@@ -211,8 +252,8 @@
                       @blur="formatExpDate"
                       dense
                       outlined
-                    ></v-text-field>
-                    <v-text-field
+                    ></v-text-field> -->
+                    <!-- <v-text-field
                       label="Số ca tiêm"
                       class="flex xs12 md6"
                       v-model="thongTinLichTiem.SoCaTiem"
@@ -239,21 +280,7 @@
                       v-model="thongTinLichTiem.SoDienThoai"
                       dense
                       outlined
-                    ></v-text-field>
-                    <!-- <v-autocomplete
-                        class="flex xs12 md6"
-                        hide-no-data
-                        :items="tinhTrangList"
-                        v-model="thongTinLichTiem.TinhTrangLich"
-                        item-text="name"
-                        item-value="value"
-                        clearable
-                        :rules="required"
-                        required
-                        outlined
-                        label="Tình trạng lịch tiêm"
-                        dense
-                    ></v-autocomplete> -->
+                    ></v-text-field> -->
                     
                 </v-layout>
             </v-form>
@@ -276,6 +303,100 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog
+        max-width="600"
+        v-model="dialogChonLanTiem"
+      >
+        <v-card>
+          <v-toolbar
+            dark
+            color="#0072bc"
+          >
+            <v-toolbar-title>Chọn lần tiêm</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn
+                icon
+                dark
+                @click="dialogChonLanTiem = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-card-text class="mt-2 py-4">
+            <v-row>
+              <v-col
+                cols="12"
+                md="12"
+                class="pb-0"
+              >
+                <v-autocomplete
+                  hide-no-data
+                  :items="listLanTiem"
+                  v-model="lanTiem"
+                  item-text="name"
+                  item-value="value"
+                  outlined
+                  label="Lần tiêm"
+                  dense
+                  hide-details="auto"
+              >
+              </v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions class="justify-end py-3">
+            <v-btn class="mr-2" color="#0072bc" :loading="loading" :disabled="loading" @click="submitAddNguoiTiem">
+              <v-icon left>
+                mdi-content-save
+              </v-icon>
+              <span>Xác nhận</span>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog
+        max-width="1000"
+        fullscreen
+        v-model="dialogAddNguoiTiem"
+      >
+        <v-card>
+          <v-toolbar
+            dark
+            color="#0072bc"
+          >
+            <v-toolbar-title>Thêm danh sách gọi tiêm</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn
+                icon
+                dark
+                @click="dialogAddNguoiTiem = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <v-card-text class="mt-2 py-0" style="max-height: calc(100vh - 130px) !important;overflow: auto;">
+            <dang-ky-chinh-thuc :lichTiemChungId="lichTiemSelected['id']" :loaiVaccine="lichTiemSelected['loaiThuocTiem']" ref="dangkychinhthuc" :addLichTiem="lichTiem"></dang-ky-chinh-thuc>
+          </v-card-text>
+          <v-card-actions class="justify-end" style="max-width: 1366px!important;margin: 0 auto;">
+            <v-btn small color="red" class="white--text mr-2" :loading="loading" :disabled="loading" @click="cancelAddNguoiTiem">
+              <v-icon left>
+                mdi-close
+              </v-icon>
+              Thoát
+            </v-btn>
+            <v-btn small class="mr-2" color="#0072bc" :loading="loading" :disabled="loading" @click="submitAddNguoiTiem">
+              <v-icon left>
+                mdi-content-save
+              </v-icon>
+              <span>Thêm vào danh sách gọi tiêm</span>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
     
   </div>
@@ -284,16 +405,29 @@
 
 <script>
   // import Search from './FormTimKiem.vue'
+  import $ from 'jquery'
+  import DanhSachChinhThuc from './DanhSachDangKyChinhThuc.vue'
   import Pagination from './Pagination'
   export default {
     name: 'Customers',
     components: {
     // 'tim-kiem': Search,
-    'pagination': Pagination
+    'pagination': Pagination,
+    'dang-ky-chinh-thuc': DanhSachChinhThuc
     },
     data () {
       return {
+        lichTiem: true,
+        listLanTiem: [
+          {name: 'Lần tiêm 1', value: 1},
+          {name: 'Lần tiêm 2', value: 2}
+        ],
+        lanTiem: 2,
+        dialogChonLanTiem: false,
+        dialogAddNguoiTiem: false,
         validFormAdd: true,
+        processingAction: false,
+        lichTiemSelected: '',
         loading: false,
         loadingData: false,
         listDaiLy: [],
@@ -308,6 +442,7 @@
         typeAction: 'add',
         dialogAddMember: false,
         items: [],
+        listUyBanNhanDan: [],
         listCoSoYTe: [],
         coSoYTe: '',
         startDateFormatted: '',
@@ -318,9 +453,13 @@
           {name: 'Đã đóng', value: 1}
         ],
         thongTinLichTiem: {
+          TenCoSo: '',
+          TenLich: '',
+          UyBanNhanDan_ID: '',
           CoSoYTe_ID: '',
           MaDot: '',
           NgayBatDau: '',
+          GioHenTiem: '',
           NgayKetThuc: '',
           DiaDiemTiemChung: '',
           LoaiThuocTiem: '',
@@ -342,13 +481,7 @@
         showAdvanceSearch: false,
         lichTiemUpdate: '',
         required: [
-          (value) => {
-            if(String(value).trim()){
-                return true
-              } else {
-                return 'Thông tin bắt buộc'
-              } 
-          }
+          v => !!v || 'Thông tin bắt buộc'
         ],
         headers: [
           {
@@ -357,48 +490,54 @@
             align: 'center',
             value: 'index'
           },
+          // {
+          //   sortable: false,
+          //   text: 'Mã đợt',
+          //   align: 'left',
+          //   value: 'maDot'
+          // },
           {
             sortable: false,
-            text: 'Mã đợt',
+            text: 'Tên lịch tiêm',
             align: 'left',
-            value: 'maDot'
+            value: 'tenLich'
           },
           {
             sortable: false,
-            text: 'Ngày bắt đầu',
+            text: 'Ngày tiêm',
             align: 'left',
             value: 'ngayBatDau'
           },
+          // {
+          //   sortable: false,
+          //   text: 'Ngày kết thúc',
+          //   align: 'left',
+          //   value: 'ngayKetThuc'
+          // },
           {
             sortable: false,
-            text: 'Ngày kết thúc',
-            align: 'left',
-            value: 'ngayKetThuc'
-          },
-          {
-            sortable: false,
-            text: 'Địa chỉ tiêm chủng',
+            text: 'Địa điểm tiêm chủng',
             align: 'left',
             value: 'diaDiemTiemChung'
           },
+          // {
+          //   sortable: false,
+          //   text: 'Tổng số mũi tiêm dự kiến',
+          //   align: 'left',
+          //   value: 'tongSoMuiTiem'
+          // },
           {
             sortable: false,
-            text: 'Tổng số mũi tiêm dự kiến',
-            align: 'left',
-            value: 'tongSoMuiTiem'
-          },
-          {
-            sortable: false,
-            text: 'Thông tin lô thuốc',
+            text: 'Loại thuốc tiêm',
             align: 'left',
             value: 'loaiThuocTiem'
           },
-          {
-            sortable: false,
-            text: 'Thông tin bác sỹ',
-            align: 'left',
-            value: 'bacSiKham'
-          },
+          // {
+          //   sortable: false,
+          //   text: 'Thông tin bác sỹ',
+          //   align: 'left',
+          //   value: 'bacSiKham'
+          // },
           {
             sortable: false,
             text: 'Tình trạng',
@@ -408,7 +547,7 @@
           {
             sortable: false,
             text: 'Thao tác',
-            align: 'center',
+            align: 'left',
             value: 'action'
           }
         ],
@@ -423,7 +562,8 @@
         return
       }
       vm.getLichTiem(0)
-      // vm.getCoSoYTe()
+      vm.getUyBanNhanDan()
+      vm.getCoSoYTe()
     },
     computed: {
       breakpointName () {
@@ -438,6 +578,7 @@
         vm.thongTinLichTiem.MaDot = item.maDot
         vm.startDateFormatted = item.ngayBatDau
         vm.endDateFormatted = item.ngayKetThuc
+        vm.thongTinLichTiem.GioHenTiem = item.gioHenTiem
         vm.thongTinLichTiem.DiaDiemTiemChung = item.diaDiemTiemChung
         vm.thongTinLichTiem.LoaiThuocTiem = item.loaiThuocTiem
         vm.thongTinLichTiem.NoiSanXuat = item.noiSanXuat
@@ -449,6 +590,9 @@
         vm.thongTinLichTiem.TinhTrangLich = item.tinhTrangLich
         vm.thongTinLichTiem.BacSiKham = item.bacSiKham
         vm.thongTinLichTiem.SoDienThoai = item.soDienThoai
+        vm.thongTinLichTiem.UyBanNhanDan_ID = item.uyBanNhanDanID
+        vm.thongTinLichTiem.TenLich = item.tenLich
+        vm.coSoYTe = item.coSoYTeId
         vm.dialogAddMember = true
       },
       closeLichTiem (item) {
@@ -468,6 +612,7 @@
         vm.thongTinLichTiem.TinhTrangLich = 1
         vm.thongTinLichTiem.BacSiKham = item.bacSiKham
         vm.thongTinLichTiem.SoDienThoai = item.soDienThoai
+        vm.thongTinLichTiem.TenLich = item.tenLich
         let filter = {
           id: item['id'],
           data: vm.thongTinLichTiem
@@ -493,6 +638,59 @@
       viewCaTiem (item) {
         let vm = this
         vm.$router.push({ path: '/pages/lich-tiem-chung/' + item.id})
+      },
+      viewDanhSachTiem (item) {
+        let vm = this
+        vm.$router.push({ path: '/pages/danh-sach-goi-tiem?lichTiemId=' + item.id})
+      },
+      pickFileImport (item) {
+        let vm = this
+        vm.lichTiemSelected = item
+        document.getElementById('fileImport').value = ''
+        document.getElementById('fileImport').click()
+      },
+      addNguoiTiem (item) {
+        let vm = this
+        vm.lichTiem = false
+        vm.lichTiemSelected = item
+        vm.dialogAddNguoiTiem = true
+        setTimeout(function () {
+          vm.lichTiem = true
+          vm.$refs.dangkychinhthuc.resetSelected()
+        }, 300)
+      },
+      uploadFileImport () {
+        let vm = this
+        let files = $('#fileImport')[0].files
+        let file = files[0]
+        vm.processingAction = true
+        let filter = {
+          file: file,
+          sheetAt:0,
+          startCol:0,
+          endCol:26,
+          startRow:8,
+          endRow:5000,
+          table:'phieuhentiem',
+          lichTiemChung_ID: vm.lichTiemSelected['id'],
+          // gioHenTiem: vm.lichTiemSelected['gioHenTiem'],
+          lanTiem: 1
+        }
+        vm.$store.dispatch('importDanhSachPhieu', filter).then(function(result) {
+          vm.processingAction = false
+          vm.$store.commit('SHOW_SNACKBAR', {
+            show: true,
+            text: 'Import danh sách thành công',
+            color: 'success',
+          })
+        }).catch(function () {
+          vm.processingAction = false
+          vm.$store.commit('SHOW_SNACKBAR', {
+            show: true,
+            text: 'Import thất bại',
+            color: 'error',
+          })
+        })
       },
       formatStartDate () {
         let vm = this
@@ -545,6 +743,16 @@
           vm.pageCount = Math.ceil(vm.totalItem / vm.itemsPerPage)
         })
       },
+       getUyBanNhanDan() {
+        let vm = this
+        let filter = {
+          page: 0,
+          size: 100
+        }
+        vm.$store.dispatch('getUyBanNhanDan', filter).then(function (result) {
+          vm.listUyBanNhanDan = result.hasOwnProperty('data') ? result.data : []
+        })
+      },
       getCoSoYTe () {
         let vm = this
         let filter = {
@@ -572,12 +780,9 @@
       formatDataInput () {
         let vm = this
         try {
-          vm.thongTinLichTiem.CoSoYTe_ID = vm.userLogin['coSoYTeId']
-          // let splitNgayBatDau = String(vm.startDateFormatted).split('/')
+          vm.thongTinLichTiem.CoSoYTe_ID = vm.coSoYTe
           vm.thongTinLichTiem.NgayBatDau = vm.startDateFormatted
-          // let splitNgayKetThuc = String(vm.endDateFormatted).split('/')
           vm.thongTinLichTiem.NgayKetThuc = vm.endDateFormatted
-          // let splitHanSuDung = String(vm.expDateFormatted).split('/')
           vm.thongTinLichTiem.HanSuDung = vm.expDateFormatted
           vm.thongTinLichTiem.SoCaTiem = Number(vm.thongTinLichTiem.SoCaTiem)
           vm.thongTinLichTiem.SoMuiMotCa = Number(vm.thongTinLichTiem.SoMuiMotCa)
@@ -661,10 +866,78 @@
           })
         }
       },
+      showChonLanTiem () {
+        let vm = this
+        let selectNguoiTiem = vm.$refs.dangkychinhthuc.getSelected()
+        let arrIds = selectNguoiTiem.map(function(item) {
+          return item['id']
+        })
+        if (arrIds && arrIds.length) {
+          vm.dialogChonLanTiem = true
+        } else {
+          vm.$store.commit('SHOW_SNACKBAR', {
+            show: true,
+            text: 'Vui lòng chọn người tiêm',
+            color: 'success',
+          })
+          return
+        }
+      },
+      submitAddNguoiTiem () {
+        let vm = this
+        let selectNguoiTiem = vm.$refs.dangkychinhthuc.getSelected()
+        let arrIds = selectNguoiTiem.map(function(item) {
+          return item['id']
+        })
+        if (arrIds && arrIds.length) {
+          console.log('nguoiTiem', arrIds)
+          let textConfirm = 'Tổng số ' + arrIds.length + ' người đăng ký được gọi tiêm'
+          let x = confirm(textConfirm)
+          if (x) {
+            let filter = {
+              "NguoiTiemChungIDs": arrIds,
+              "LichTiemChungID" : vm.lichTiemSelected['id'],
+              "loaiThuocTiem": vm.lichTiemSelected['loaiThuocTiem'],
+              // "LanTiem" : vm.lanTiem
+            }
+            vm.loading = true
+            vm.$store.dispatch('addNguoiTiemVaoLich', filter).then(function () {
+              vm.loading = false
+              vm.$store.commit('SHOW_SNACKBAR', {
+                show: true,
+                text: 'Thêm người tiêm thành công',
+                color: 'success',
+              })
+              // vm.dialogChonLanTiem = false
+              // vm.dialogAddNguoiTiem = false
+              // vm.getLichTiem(0)
+              vm.$refs.dangkychinhthuc.initGetDanhSach()
+            }).catch(function () {
+              vm.$store.commit('SHOW_SNACKBAR', {
+                show: true,
+                text: 'Thêm người tiêm thất bại',
+                color: 'error',
+              })
+            })
+          }
+        } else {
+          vm.$store.commit('SHOW_SNACKBAR', {
+            show: true,
+            text: 'Vui lòng chọn người tiêm',
+            color: 'success',
+          })
+          return
+        }
+      },
       cancelAddMember () {
         let vm = this
         vm.dialogAddMember = false
       },
+      cancelAddNguoiTiem () {
+        let vm = this
+        vm.dialogAddNguoiTiem = false
+        vm.$refs.dangkychinhthuc.resetSelected()
+      }
     },
   }
 </script>

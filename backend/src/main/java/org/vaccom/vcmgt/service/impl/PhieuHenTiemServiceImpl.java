@@ -17,6 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.vaccom.vcmgt.dto.PhieuHenTiemDto;
+import org.vaccom.vcmgt.dto.ResultSearchDto;
+import org.vaccom.vcmgt.entity.MuiTiemChung;
 import org.vaccom.vcmgt.entity.NguoiTiemChung;
 import org.vaccom.vcmgt.entity.PhieuHenTiem;
 import org.vaccom.vcmgt.repository.PhieuHenTiemRepository;
@@ -185,4 +188,25 @@ public class PhieuHenTiemServiceImpl implements PhieuHenTiemService {
 
 		return lstPhieuHenTiem;
 	}
+
+	@Override
+	public List<PhieuHenTiem> findByLichTiemChungID(long lichTiemChungId) {
+		return phieuHenTiemRepository.findByLichTiemChungID(lichTiemChungId);
+	}
+
+	@Override
+	public List<PhieuHenTiem> findByTinhTrangXacNhan_LichTiemChungID(int tinhTrangXacNhan, long LichTiemChungID) {
+		return phieuHenTiemRepository.findByTinhTrangXacNhan_LichTiemChungID(tinhTrangXacNhan, LichTiemChungID);
+	}
+
+	@Override
+	public List<PhieuHenTiem> findByKhacTinhTrangXacNhan_LichTiemChungID(int tinhTrangXacNhan, long LichTiemChungID) {
+		return phieuHenTiemRepository.findByKhacTinhTrangXacNhan_LichTiemChungID(tinhTrangXacNhan, LichTiemChungID);
+	}
+
+	@Override
+	public PhieuHenTiem update(PhieuHenTiem phieuHenTiem) {
+		return phieuHenTiemRepository.save(phieuHenTiem);
+	}
+
 }

@@ -9,6 +9,7 @@ import org.vaccom.vcmgt.entity.NguoiDung;
 import org.vaccom.vcmgt.service.HangChoThongBaoService;
 import org.vaccom.vcmgt.util.ZaloNotificationUtil;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -17,21 +18,24 @@ public class HangChoThongBaoActionImpl implements HangChoThongBaoAction {
     @Autowired
     private HangChoThongBaoService hangChoThongBaoService;
 
-    @Override
-    public HangChoThongBao addHangChoThongBao(String jsonObject, NguoiDung nguoiDung, boolean isReady, String loaiThongBao) throws Exception {
-        HangChoThongBao hangChoThongBao = new HangChoThongBao();
-        hangChoThongBao.setLoaiThongBao(loaiThongBao);
-        hangChoThongBao.setSent(false);
-        hangChoThongBao.setPayload(jsonObject);
-        hangChoThongBao.setToEmail(nguoiDung.getEmail());
-        hangChoThongBao.setToTelNo(ZaloNotificationUtil.convertPhoneNumber(nguoiDung.getSoDienThoai()));
-        hangChoThongBao.setReady(isReady);
+//    @Override
+//    public HangChoThongBao addHangChoThongBao(String jsonObject, NguoiDung nguoiDung, boolean isReady, String loaiThongBao, long uyBanNhanDanID, long mappingKey) throws Exception {
+//        HangChoThongBao hangChoThongBao = new HangChoThongBao();
+//        hangChoThongBao.setLoaiThongBao(loaiThongBao);
+//        hangChoThongBao.setSent(false);
+//        hangChoThongBao.setPayload(jsonObject);
+//        hangChoThongBao.setToEmail(nguoiDung.getEmail());
+//        hangChoThongBao.setToTelNo(ZaloNotificationUtil.convertPhoneNumber(nguoiDung.getSoDienThoai()));
+//        hangChoThongBao.setReady(isReady);
+//        hangChoThongBao.setUyBanNhanDanId(uyBanNhanDanID);
+//        hangChoThongBao.setStatus(ZaloConstant.CHUA_GUI);
+//        hangChoThongBao.setMappingKey(mappingKey);
+//
+//        return hangChoThongBaoService.updateHangChoThongBao(hangChoThongBao);
+//    }
 
-        return hangChoThongBaoService.updateHangChoThongBao(hangChoThongBao);
-    }
-
     @Override
-    public HangChoThongBao addHangChoThongBao(String jsonObject, String SoDienThoai, String Email, boolean isReady, String loaiThongBao) throws Exception {
+    public HangChoThongBao addHangChoThongBao(String jsonObject, String SoDienThoai, String Email, boolean isReady, String loaiThongBao, long uyBanNhanDanID, long mappingKey) throws Exception {
 
         HangChoThongBao hangChoThongBao = new HangChoThongBao();
         hangChoThongBao.setLoaiThongBao(loaiThongBao);
@@ -40,6 +44,11 @@ public class HangChoThongBaoActionImpl implements HangChoThongBaoAction {
         hangChoThongBao.setToEmail(Email);
         hangChoThongBao.setToTelNo(ZaloNotificationUtil.convertPhoneNumber(SoDienThoai));
         hangChoThongBao.setReady(isReady);
+        hangChoThongBao.setUyBanNhanDanId(uyBanNhanDanID);
+        hangChoThongBao.setStatus(ZaloConstant.CHUA_GUI);
+        hangChoThongBao.setMappingKey(mappingKey);
+        hangChoThongBao.setErrorCodeZalo(1);
+        hangChoThongBao.setCreateDate(new Date());
 
         return hangChoThongBaoService.updateHangChoThongBao(hangChoThongBao);
     }
@@ -57,6 +66,11 @@ public class HangChoThongBaoActionImpl implements HangChoThongBaoAction {
     }
 
     @Override
+    public List<HangChoThongBao> findByStatus(long status) {
+        return hangChoThongBaoService.findByStatus(status);
+    }
+
+    @Override
     public HangChoThongBao update(HangChoThongBao hangChoThongBao) {
         return hangChoThongBaoService.updateHangChoThongBao(hangChoThongBao);
     }
@@ -67,8 +81,23 @@ public class HangChoThongBaoActionImpl implements HangChoThongBaoAction {
     }
 
     @Override
+    public List<HangChoThongBao> findByIsSentIsReadyCreateDate(boolean isSent, boolean isReady, String createDate) {
+        return hangChoThongBaoService.findByIsSentIsReadyCreateDate(isSent, isReady, createDate);
+    }
+
+    @Override
     public HangChoThongBao findByPhone_LoaiThongBao(String toTelNo, String LoaiThongBao) {
         return hangChoThongBaoService.findByPhone_LoaiThongBao(toTelNo, LoaiThongBao);
+    }
+
+    @Override
+    public HangChoThongBao findByLoaiThongBao_mappingKey(long mappingKey, String loaiThongBao) {
+        return hangChoThongBaoService.findByLoaiThongBao_mappingKey(mappingKey, loaiThongBao);
+    }
+
+    @Override
+    public List<HangChoThongBao> findByStatus_LoaiThongBao(long status, String loaiThongBao, long uyBanNhanDanId) {
+        return hangChoThongBaoService.findByStatus_LoaiThongBao(status, loaiThongBao, uyBanNhanDanId);
     }
 
 

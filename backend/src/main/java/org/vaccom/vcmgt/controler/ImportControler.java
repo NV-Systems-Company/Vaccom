@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +24,9 @@ import org.vaccom.vcmgt.util.VaccomUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/rest/v1/import")
@@ -32,7 +36,7 @@ public class ImportControler {
 
 	@RequestMapping(value = "/exceldata", method = RequestMethod.POST)
 	public ResponseEntity<?> importQuocGia(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("file") MultipartFile file, @RequestParam("sheetAt") int sheetAt,
+			@RequestParam("file") MultipartFile file, @RequestParam(name = "sheetAt", defaultValue = "0") int sheetAt,
 			@RequestParam("startCol") int startCol, @RequestParam("endCol") int endCol,
 			@RequestParam("startRow") int startRow, @RequestParam("endRow") int endRow,
 			@RequestParam("table") String table) {
@@ -48,7 +52,16 @@ public class ImportControler {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN)
 						.body(MessageUtil.getVNMessageText("data.import.permission_error"));
 			}
-			importDataAction.importData(vaiTro, table, file, sheetAt, startCol, endCol, startRow, endRow);
+
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			executor.submit(() -> {
+				try {
+					importDataAction.importData(vaiTro, table, file, sheetAt, startCol, endCol, startRow, endRow);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			String msg = MessageUtil.getVNMessageText("data.import." + table + ".success");
 
 			return ResponseEntity.status(HttpStatus.OK).body(msg);
@@ -59,6 +72,39 @@ public class ImportControler {
 
 		}
 	}
+
+	@RequestMapping(value = "/phieuhentiem/exceldata", method = RequestMethod.POST)
+	public ResponseEntity<?> importPhieuHenTiem(HttpServletRequest request, HttpServletResponse response,
+										   @RequestParam("file") MultipartFile file, @RequestParam(name = "sheetAt", defaultValue = "0") int sheetAt,
+										   @RequestParam("startCol") int startCol, @RequestParam("endCol") int endCol,
+										   @RequestParam("startRow") int startRow, @RequestParam("endRow") int endRow,
+										   @RequestParam("table") String table, @RequestParam("lichTiemChung_ID") long lichTiemChung_ID,
+												@RequestParam("lanTiem") int lanTiem) {
+		try {
+			VaiTro vaiTro = (VaiTro) request.getAttribute("_VAI_TRO");
+
+			if (!RoleUtil.isCanBoDiaBan(vaiTro)
+					&& !RoleUtil.isCanBoYTe(vaiTro)
+					&& !RoleUtil.isQuanTriCoSo(vaiTro)
+					&& !RoleUtil.isQuanTriHeThong(vaiTro)
+					&& !RoleUtil.isCanBoUBND(vaiTro)
+			) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body(MessageUtil.getVNMessageText("data.import.permission_error"));
+			}
+			importDataAction.importData(vaiTro, table, file, sheetAt, startCol, endCol, startRow, endRow, lichTiemChung_ID, lanTiem);
+			String msg = MessageUtil.getVNMessageText("data.import." + table + ".success");
+
+			return ResponseEntity.status(HttpStatus.OK).body(msg);
+		} catch (Exception e) {
+			_log.error(e);
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+		}
+	}
+
+
 
 	private Log _log = LogFactory.getLog(ImportControler.class);
 }
